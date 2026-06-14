@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                 String     @id @default(uuid())
+  anonymous_username String     @unique
+  avatar_species     String     @default("Fox") // Fox, Wolf, Cat, Dragon, Owl, Rabbit
+  created_at         DateTime   @default(now())
+  updated_at         DateTime   @updatedAt
+
+  logs               Log[]
+  posts              Post[]
+  insights           Insight[]
+  wrappedReports     WrappedReport[]
+  communities        CommunityMember[]
+}
+
+model Community {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  type        String   @default("Public") // Public, Private
+  created_at  DateTime @default(now())
+  
+  members     CommunityMember[]
+  posts       Post[]
+}
+
+model CommunityMember {
+  id           String    @id @default(uuid())
+  userId       String
+  communityId  String
+  joined_at    DateTime  @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community    Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, communityId])
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  authorId    String
+  communityId String
+  content     String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+}
+
+model Log {
+  id         String   @id @default(uuid())
+  userId     String
+  brand      String
+  trigger    String
+  note       String?
+  photo_url  String?
+  timestamp  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Insight {
+  id         String   @id @default(uuid())
+  userId     String
+  type       String   // e.g., "Peak Hour", "Top Trigger"
+  data       Json
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WrappedReport {
+  id         String   @id @default(uuid())
+  userId     String
+  month      Int
+  year       Int
+  data       Json
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
