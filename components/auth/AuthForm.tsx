@@ -63,7 +63,7 @@ export function AuthForm() {
   };
 
   return (
-    <PixelCard className="w-full max-w-md mx-auto p-8 bg-[#0B0B0F]/90 backdrop-blur-md">
+    <PixelCard className="w-full max-w-md mx-auto p-8 bg-paper-white shadow-[8px_8px_0px_0px_rgba(11,11,15,1)]">
       <AnimatePresence mode="wait">
         {step === "loading" && (
           <motion.div
@@ -90,7 +90,7 @@ export function AuthForm() {
                 type="button"
                 onClick={() => setMode("login")}
                 className={`flex-1 py-2 text-sm font-bold tracking-widest uppercase transition-all ${
-                  mode === "login" ? "text-[#4DA6FF] border-b-2 border-[#4DA6FF]" : "text-[#A1A1AA]"
+                  mode === "login" ? "text-marlboro-red border-b-4 border-marlboro-red" : "text-ash-gray border-b-4 border-transparent hover:text-ink-black"
                 }`}
               >
                 Login
@@ -99,7 +99,7 @@ export function AuthForm() {
                 type="button"
                 onClick={() => setMode("signup")}
                 className={`flex-1 py-2 text-sm font-bold tracking-widest uppercase transition-all ${
-                  mode === "signup" ? "text-[#4DA6FF] border-b-2 border-[#4DA6FF]" : "text-[#A1A1AA]"
+                  mode === "signup" ? "text-marlboro-red border-b-4 border-marlboro-red" : "text-ash-gray border-b-4 border-transparent hover:text-ink-black"
                 }`}
               >
                 Sign Up
@@ -108,7 +108,7 @@ export function AuthForm() {
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-[#A1A1AA] uppercase font-bold tracking-wider mb-1 block">
+                <label className="text-xs text-ash-gray uppercase font-bold tracking-wider mb-1 block">
                   Email or Phone
                 </label>
                 <input
@@ -116,11 +116,11 @@ export function AuthForm() {
                   type="text"
                   required
                   placeholder="name@example.com or +1234567890"
-                  className="w-full bg-[#1D1D24] border-2 border-[#2D2D36] p-3 text-white focus:outline-none focus:border-[#4DA6FF] transition-colors"
+                  className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black focus:outline-none focus:border-marlboro-red focus:shadow-[4px_4px_0px_0px_rgba(225,29,72,0.2)] transition-all font-medium"
                 />
               </div>
               <div>
-                <label className="text-xs text-[#A1A1AA] uppercase font-bold tracking-wider mb-1 block">
+                <label className="text-xs text-ash-gray uppercase font-bold tracking-wider mb-1 block">
                   Password
                 </label>
                 <input
@@ -128,7 +128,7 @@ export function AuthForm() {
                   type="password"
                   required
                   placeholder="••••••••"
-                  className="w-full bg-[#1D1D24] border-2 border-[#2D2D36] p-3 text-white focus:outline-none focus:border-[#4DA6FF] transition-colors"
+                  className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black focus:outline-none focus:border-marlboro-red focus:shadow-[4px_4px_0px_0px_rgba(225,29,72,0.2)] transition-all font-medium"
                 />
               </div>
             </div>
@@ -137,7 +137,7 @@ export function AuthForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="mt-4 w-full bg-[#4DA6FF] text-[#0B0B0F] font-bold p-3 uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] border-[2px] border-[#0B0B0F]"
+              className="mt-4 w-full bg-marlboro-red text-paper-white font-bold p-3 uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] border-[3px] border-ink-black active:shadow-none active:translate-y-1 transition-all"
             >
               {mode === "login" ? "Enter the Smory" : "Join the Smory"}
             </motion.button>
@@ -154,12 +154,12 @@ export function AuthForm() {
             className="flex flex-col gap-4"
           >
             <div className="text-center mb-4">
-              <h3 className="text-xl font-bold text-white mb-2">Verify {type === "phone" ? "Phone" : "Email"}</h3>
-              <p className="text-[#A1A1AA] text-sm">Enter the code sent to {identifier}</p>
+              <h3 className="text-xl font-bold text-ink-black mb-2">Verify {type === "phone" ? "Phone" : "Email"}</h3>
+              <p className="text-ash-gray text-sm font-medium">Enter the code sent to {identifier}</p>
             </div>
 
             <div>
-              <label className="text-xs text-[#A1A1AA] uppercase font-bold tracking-wider mb-1 block">
+              <label className="text-xs text-ash-gray uppercase font-bold tracking-wider mb-1 block">
                 Verification Code
               </label>
               <input
@@ -167,7 +167,7 @@ export function AuthForm() {
                 type="text"
                 required
                 placeholder="123456"
-                className="w-full bg-[#1D1D24] border-2 border-[#2D2D36] p-3 text-white text-center tracking-[0.5em] focus:outline-none focus:border-[#4DA6FF] transition-colors text-xl"
+                className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black font-bold text-center tracking-[0.5em] focus:outline-none focus:border-marlboro-red focus:shadow-[4px_4px_0px_0px_rgba(225,29,72,0.2)] transition-all text-xl"
               />
             </div>
 
@@ -175,14 +175,14 @@ export function AuthForm() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="mt-4 w-full bg-[#4DA6FF] text-[#0B0B0F] font-bold p-3 uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] border-[2px] border-[#0B0B0F]"
+              className="mt-4 w-full bg-filter-gold text-ink-black font-bold p-3 uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] border-[3px] border-ink-black active:shadow-none active:translate-y-1 transition-all"
             >
               Verify & Enter
             </motion.button>
             <button
               type="button"
               onClick={() => setStep("credentials")}
-              className="mt-2 text-xs text-[#A1A1AA] hover:text-white transition-colors uppercase tracking-widest font-bold"
+              className="mt-2 text-xs text-ash-gray hover:text-marlboro-red transition-colors uppercase tracking-widest font-bold"
             >
               Go Back
             </button>

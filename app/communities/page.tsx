@@ -12,14 +12,14 @@ const COMMUNITIES = [
     name: "Night Owls",
     description: "For those who find their peace between 1 AM and 4 AM. Dark thoughts, deep reflections, and the quiet crackle of burning paper.",
     memberCount: 1420,
-    themeColor: "#4DA6FF" // Blue
+    themeColor: "#0B0B0F" // Ink Black
   },
   {
     id: "2",
     name: "Coffee & Cigarettes",
     description: "The classic combination. Discussing morning routines, the perfect roast, and the first drag of the day.",
     memberCount: 893,
-    themeColor: "#EAB308" // Yellow/Gold
+    themeColor: "#EAB308" // Filter Gold
   },
   {
     id: "3",
@@ -33,7 +33,7 @@ const COMMUNITIES = [
     name: "Creative Block",
     description: "Writers, artists, coders, and thinkers stepping outside for a moment to find the missing piece of the puzzle.",
     memberCount: 654,
-    themeColor: "#EC4899" // Pink
+    themeColor: "#E11D48" // Marlboro Red
   },
   {
     id: "5",
@@ -47,25 +47,25 @@ const COMMUNITIES = [
     name: "The Commute",
     description: "Stuck in traffic or waiting for the train. Sharing the fleeting moments of urban transit.",
     memberCount: 1105,
-    themeColor: "#A855F7" // Purple
+    themeColor: "#3b82f6" // Blue
   }
 ];
 
 export default function CommunitiesPage() {
   return (
-    <div className="min-h-screen relative p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen relative p-4 sm:p-6 lg:p-8 bg-checkered">
       <PixelParticleBackground type="dust" density={30} className="fixed inset-0 opacity-20 pointer-events-none z-0" />
       
       <div className="relative z-10 max-w-5xl mx-auto pt-8">
         <header className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(0,0,0,0.5)" }}>
+            <h1 className="text-3xl font-bold text-ink-black tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}>
               Find Your Tribe
             </h1>
-            <p className="text-[#A1A1AA] text-sm mt-1 uppercase tracking-widest font-bold">Discover communities that fit your vibe</p>
+            <p className="text-marlboro-red text-sm mt-1 uppercase tracking-widest font-bold">Discover communities that fit your vibe</p>
           </div>
-          <div className="bg-[#1D1D24] p-3 rounded-xl border border-[#2D2D36] text-[#4DA6FF] shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]">
-            <Compass size={24} />
+          <div className="bg-paper-white p-3 border-[3px] border-ink-black text-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)]">
+            <Compass size={24} strokeWidth={2.5} />
           </div>
         </header>
 

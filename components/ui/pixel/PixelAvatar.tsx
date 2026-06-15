@@ -21,8 +21,8 @@ export function PixelAvatar({ src, size = "md", className, isIdleAnimated = true
   return (
     <motion.div
       className={cn(
-        "relative inline-block overflow-hidden bg-[#1D1D24] border-[3px] border-[#2D2D36]",
-        "shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]",
+        "relative inline-block overflow-hidden bg-paper-white border-[3px] border-ink-black",
+        "shadow-[4px_4px_0px_0px_rgba(11,11,15,1)]", // Solid black shadow for light mode
         sizeClasses[size],
         className
       )}
@@ -39,10 +39,10 @@ export function PixelAvatar({ src, size = "md", className, isIdleAnimated = true
       }}
     >
       {/* Corner cutouts */}
-      <div className="absolute -top-[3px] -left-[3px] w-1.5 h-1.5 bg-[#0B0B0F]" />
-      <div className="absolute -top-[3px] -right-[3px] w-1.5 h-1.5 bg-[#0B0B0F]" />
-      <div className="absolute -bottom-[3px] -left-[3px] w-1.5 h-1.5 bg-[#0B0B0F]" />
-      <div className="absolute -bottom-[3px] -right-[3px] w-1.5 h-1.5 bg-[#0B0B0F]" />
+      <div className="absolute -top-[3px] -left-[3px] w-1.5 h-1.5 bg-paper-white border-b-2 border-r-2 border-ink-black" />
+      <div className="absolute -top-[3px] -right-[3px] w-1.5 h-1.5 bg-paper-white border-b-2 border-l-2 border-ink-black" />
+      <div className="absolute -bottom-[3px] -left-[3px] w-1.5 h-1.5 bg-paper-white border-t-2 border-r-2 border-ink-black" />
+      <div className="absolute -bottom-[3px] -right-[3px] w-1.5 h-1.5 bg-paper-white border-t-2 border-l-2 border-ink-black" />
       
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt="Pixel Avatar" className="w-full h-full object-cover pixelated" style={{ imageRendering: "pixelated" }} />

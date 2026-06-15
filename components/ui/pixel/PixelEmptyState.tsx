@@ -18,15 +18,15 @@ export function PixelEmptyState({ title, description, actionLabel, onAction, ico
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
       >
-        <PixelCard className="mb-6 p-8 bg-[#1D1D24]/80 backdrop-blur-sm flex flex-col items-center">
-          {icon && <div className="mb-4 text-[#4DA6FF]">{icon}</div>}
-          <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-          <p className="text-[#A1A1AA] text-sm mb-6 max-w-sm">{description}</p>
+        <PixelCard className="mb-6 p-8 flex flex-col items-center bg-paper-white shadow-[8px_8px_0px_0px_rgba(11,11,15,0.1)]">
+          {icon && <div className="mb-4 text-marlboro-red">{icon}</div>}
+          <h3 className="text-xl font-bold text-ink-black mb-2">{title}</h3>
+          <p className="text-ash-gray text-sm mb-6 max-w-sm">{description}</p>
           
           {actionLabel && onAction && (
             <button 
               onClick={onAction}
-              className="px-6 py-3 bg-[#4DA6FF] text-[#0B0B0F] font-bold text-sm tracking-wide transition-transform active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] border-[2px] border-[#0B0B0F]"
+              className="px-6 py-3 bg-marlboro-red text-paper-white font-bold text-sm tracking-wide transition-transform active:scale-95 shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] border-[2px] border-ink-black"
             >
               {actionLabel}
             </button>

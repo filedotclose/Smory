@@ -37,14 +37,15 @@ export const updateSession = async (request: NextRequest) => {
   const { data: { user } } = await supabase.auth.getUser();
 
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
+  const isWelcomePage = request.nextUrl.pathname.startsWith('/welcome');
 
-  if (!user && !isAuthPage) {
+  if (!user && !isAuthPage && !isWelcomePage) {
     const url = request.nextUrl.clone();
-    url.pathname = '/auth';
+    url.pathname = '/welcome';
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthPage) {
+  if (user && (isAuthPage || isWelcomePage)) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);

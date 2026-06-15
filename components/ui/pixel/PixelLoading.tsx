@@ -12,7 +12,7 @@ export function PixelLoading({ message = "Loading..." }: PixelLoadingProps) {
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className="w-4 h-4 bg-[#4DA6FF] shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] border-2 border-[#0B0B0F]"
+            className="w-4 h-4 bg-marlboro-red shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] border-2 border-ink-black"
             animate={{
               y: ["0%", "-100%", "0%"],
             }}
@@ -26,7 +26,7 @@ export function PixelLoading({ message = "Loading..." }: PixelLoadingProps) {
         ))}
       </div>
       <motion.p 
-        className="text-[#A1A1AA] text-sm tracking-widest uppercase font-bold"
+        className="text-ink-black text-sm tracking-widest uppercase font-bold"
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
       >

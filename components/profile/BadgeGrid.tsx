@@ -1,45 +1,105 @@
-import { PixelCard } from "@/components/ui/pixel/PixelCard";
-import { Award, Zap, Heart, Target, Clock, Shield } from "lucide-react";
+"use client";
 
-const BADGES = [
-  { id: "1", name: "First Step", icon: Award, color: "#EAB308", unlocked: true },
-  { id: "2", name: "7 Day Streak", icon: Zap, color: "#4DA6FF", unlocked: true },
-  { id: "3", name: "Trigger Identified", icon: Target, color: "#EC4899", unlocked: true },
-  { id: "4", name: "Community Pillar", icon: Heart, color: "#22C55E", unlocked: false },
-  { id: "5", name: "Night Owl", icon: Clock, color: "#A855F7", unlocked: false },
-  { id: "6", name: "Iron Will", icon: Shield, color: "#F97316", unlocked: false },
+import { useState } from "react";
+import { PixelCard } from "@/components/ui/pixel/PixelCard";
+import { Flame, Wind, Droplet, Star, Zap, Leaf, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const BRAND_BADGES = [
+  { id: "1", name: "Marlboro Red", icon: Flame, color: "#E11D48", unlocked: true, count: 42, desc: "The classic full flavor. You've smoked a lot of these." },
+  { id: "2", name: "Camel Gold", icon: Star, color: "#EAB308", unlocked: true, count: 12, desc: "Smooth Turkish blend. Your occasional choice." },
+  { id: "3", name: "Am. Spirit", icon: Leaf, color: "#4DA6FF", unlocked: true, count: 5, desc: "100% additive free. Slowly burning through these." },
+  { id: "4", name: "Newport", icon: Wind, color: "#22C55E", unlocked: false, count: 0, desc: "Menthol king. Haven't tried logging this yet." },
+  { id: "5", name: "Parliament", icon: Droplet, color: "#3b82f6", unlocked: false, count: 0, desc: "Recessed filter. Needs more logs to unlock." },
+  { id: "6", name: "Lucky Strike", icon: Zap, color: "#F97316", unlocked: false, count: 0, desc: "It's toasted. A rare vintage choice." },
 ];
 
 export function BadgeGrid() {
+  const [selectedBadge, setSelectedBadge] = useState<typeof BRAND_BADGES[0] | null>(null);
+
   return (
-    <div className="w-full max-w-4xl mx-auto px-4">
-      <h3 className="text-xl font-bold text-white mb-4 uppercase tracking-tight" style={{ textShadow: "2px 2px 0px rgba(0,0,0,0.5)" }}>
-        Achievement Badges
+    <div className="w-full max-w-4xl mx-auto px-4 relative">
+      <h3 className="text-xl font-bold text-ink-black mb-4 uppercase tracking-tight" style={{ textShadow: "2px 2px 0px rgba(11,11,15,0.1)" }}>
+        Brand Collection
       </h3>
       
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-        {BADGES.map((badge) => {
+        {BRAND_BADGES.map((badge) => {
           const Icon = badge.icon;
           return (
             <PixelCard 
               key={badge.id}
+              variant="interactive"
+              onClick={() => setSelectedBadge(badge)}
               className={`flex flex-col items-center justify-center p-4 text-center aspect-square ${
-                !badge.unlocked ? "opacity-40 grayscale" : ""
+                !badge.unlocked ? "opacity-50 grayscale hover:grayscale-0" : ""
               }`}
             >
               <div 
-                className="mb-2 p-3 bg-[#0B0B0F] border-2 border-[#2D2D36] shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]"
+                className="mb-2 p-3 bg-paper-white border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)]"
                 style={badge.unlocked ? { borderColor: badge.color, color: badge.color } : {}}
               >
-                <Icon size={24} />
+                <Icon size={24} strokeWidth={2.5} />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#A1A1AA] leading-tight mt-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-ink-black leading-tight mt-1">
                 {badge.name}
               </span>
             </PixelCard>
           );
         })}
       </div>
+
+      <AnimatePresence>
+        {selectedBadge && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-black/80 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="w-full max-w-sm"
+            >
+              <PixelCard className="bg-paper-white p-6 relative">
+                <button 
+                  onClick={() => setSelectedBadge(null)}
+                  className="absolute top-4 right-4 text-ash-gray hover:text-ink-black"
+                >
+                  <X size={24} />
+                </button>
+                
+                <div className="flex flex-col items-center text-center mt-4">
+                  <div 
+                    className="p-6 bg-paper-white border-[4px] border-ink-black shadow-[8px_8px_0px_0px_rgba(11,11,15,1)] mb-6"
+                    style={{ borderColor: selectedBadge.unlocked ? selectedBadge.color : undefined, color: selectedBadge.unlocked ? selectedBadge.color : undefined }}
+                  >
+                    <selectedBadge.icon size={48} strokeWidth={2.5} />
+                  </div>
+                  
+                  <h2 className="text-2xl font-bold text-ink-black uppercase tracking-tight mb-2">
+                    {selectedBadge.name}
+                  </h2>
+                  
+                  {selectedBadge.unlocked ? (
+                    <div className="mb-4">
+                      <span className="text-3xl font-bold" style={{ color: selectedBadge.color }}>
+                        {selectedBadge.count}
+                      </span>
+                      <span className="text-ash-gray text-xs font-bold uppercase tracking-widest ml-2">Logged</span>
+                    </div>
+                  ) : (
+                    <div className="mb-4 bg-ink-black/10 px-4 py-1 border-[2px] border-ink-black">
+                      <span className="text-ink-black text-xs font-bold uppercase tracking-widest">Locked</span>
+                    </div>
+                  )}
+                  
+                  <p className="text-ink-black font-medium leading-relaxed">
+                    {selectedBadge.desc}
+                  </p>
+                </div>
+              </PixelCard>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

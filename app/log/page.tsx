@@ -8,19 +8,18 @@ export const metadata = {
 
 export default function LogPage() {
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 overflow-hidden">
-      {/* Heavy smoke effect for the log page to emphasize the smoking context */}
-      <PixelParticleBackground type="smoke" density={150} className="fixed inset-0 opacity-40 pointer-events-none z-0 mix-blend-screen" />
+    <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-checkered">
+      <PixelParticleBackground type="smoke" density={100} className="fixed inset-0 opacity-20 pointer-events-none z-0" />
       
-      <div className="relative z-10 w-full max-w-lg mx-auto">
+      <div className="relative z-10 w-full max-w-lg mx-auto pb-24">
         <header className="mb-8 text-center flex flex-col items-center">
-          <div className="bg-[#4DA6FF] text-[#0B0B0F] p-4 rounded-full border-4 border-[#0B0B0F] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] mb-6">
+          <div className="bg-marlboro-red text-paper-white p-4 rounded-full border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] mb-6">
             <PlusCircle size={40} strokeWidth={2.5} />
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(0,0,0,0.5)" }}>
+          <h1 className="text-3xl font-bold text-ink-black tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}>
             New Entry
           </h1>
-          <p className="text-[#A1A1AA] text-sm mt-2 uppercase tracking-widest font-bold">Document the moment</p>
+          <p className="text-ash-gray text-xs mt-2 uppercase tracking-widest font-bold">Document the moment</p>
         </header>
 
         <LogForm />

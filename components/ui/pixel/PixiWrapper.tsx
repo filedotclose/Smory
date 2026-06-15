@@ -37,10 +37,10 @@ export default function PixiWrapper({ type, density }: PixiWrapperProps) {
       const graphics = new PIXI.Graphics();
       if (type === "sparks" || type === "stars") {
         graphics.rect(0, 0, 4, 4);
-        graphics.fill({ color: 0xffffff, alpha: 0.8 });
+        graphics.fill({ color: 0xE11D48, alpha: 0.6 }); // Marlboro Red
       } else {
         graphics.rect(0, 0, 6, 6);
-        graphics.fill({ color: 0x888888, alpha: 0.3 });
+        graphics.fill({ color: 0xA1A1AA, alpha: 0.3 }); // Ash Gray
       }
 
       // In Pixi v8 generateTexture takes an object or renderer

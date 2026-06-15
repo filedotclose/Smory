@@ -6,10 +6,12 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 
+import { LucideIcon } from "lucide-react";
+
 interface Node {
   id: string;
   label: string;
-  icon: any;
+  icon: LucideIcon;
   status: "locked" | "available" | "unlocked";
   x: number; // grid position X (0-10)
   y: number; // grid position Y (0-10)
@@ -41,25 +43,25 @@ export function DiscoveryTree() {
 
     // Simulate unlock
     toast.success(`Unlocked: ${node.label}!`, {
-      className: "border-2 border-[#0B0B0F] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-none font-bold"
+      className: "border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] rounded-none font-bold text-ink-black"
     });
     
     confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#4DA6FF', '#EAB308'],
+      colors: ['#E11D48', '#EAB308'],
       shapes: ['square']
     });
   };
 
   return (
-    <div className="relative w-full aspect-square md:aspect-video bg-[#16161C] border-[3px] border-[#2D2D36] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] overflow-hidden">
+    <div className="relative w-full aspect-square md:aspect-video bg-paper-white border-[3px] border-ink-black shadow-[8px_8px_0px_0px_rgba(11,11,15,1)] overflow-hidden">
       {/* Background Grid */}
       <div 
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
-          backgroundImage: "linear-gradient(#2D2D36 1px, transparent 1px), linear-gradient(90deg, #2D2D36 1px, transparent 1px)",
+          backgroundImage: "linear-gradient(#0B0B0F 1px, transparent 1px), linear-gradient(90deg, #0B0B0F 1px, transparent 1px)",
           backgroundSize: "40px 40px"
         }}
       />
@@ -81,7 +83,7 @@ export function DiscoveryTree() {
               y1={`${fromNode.y * 10}%`} 
               x2={`${toNode.x * 10}%`} 
               y2={`${toNode.y * 10}%`} 
-              stroke={isUnlocked ? "#4DA6FF" : isAvailable ? "#2D2D36" : "#1D1D24"} 
+              stroke={isUnlocked ? "#E11D48" : isAvailable ? "#A1A1AA" : "#e4e4e7"} 
               strokeWidth={isUnlocked ? 4 : 2}
               strokeDasharray={isUnlocked ? "none" : "4 4"}
               className="transition-colors duration-1000"
@@ -107,10 +109,10 @@ export function DiscoveryTree() {
             onClick={() => triggerUnlock(node)}
           >
             <div className={cn(
-              "w-12 h-12 flex items-center justify-center border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] cursor-pointer transition-colors duration-500",
-              isUnlocked ? "bg-[#4DA6FF] border-[#0B0B0F] text-[#0B0B0F]" :
-              isAvailable ? "bg-[#1D1D24] border-[#4DA6FF] text-[#4DA6FF] shadow-[0_0_15px_rgba(77,166,255,0.3)] animate-pulse" :
-              "bg-[#0B0B0F] border-[#2D2D36] text-[#2D2D36]"
+              "w-12 h-12 flex items-center justify-center border-[3px] shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] cursor-pointer transition-colors duration-500",
+              isUnlocked ? "bg-marlboro-red border-ink-black text-paper-white" :
+              isAvailable ? "bg-paper-white border-marlboro-red text-marlboro-red shadow-[0_0_15px_rgba(225,29,72,0.5)] animate-pulse" :
+              "bg-e4e4e7 border-ash-gray text-ash-gray shadow-[4px_4px_0px_0px_rgba(161,161,170,0.5)]"
             )}>
               {isLocked ? <Lock size={20} /> : <Icon size={24} strokeWidth={2.5} />}
             </div>
@@ -118,9 +120,9 @@ export function DiscoveryTree() {
             <div className="mt-2 text-center w-24">
               <span className={cn(
                 "text-[10px] font-bold uppercase tracking-widest",
-                isUnlocked ? "text-white drop-shadow-[1px_1px_0_rgba(0,0,0,1)]" :
-                isAvailable ? "text-[#4DA6FF]" :
-                "text-[#2D2D36]"
+                isUnlocked ? "text-ink-black" :
+                isAvailable ? "text-marlboro-red" :
+                "text-ash-gray"
               )}>
                 {node.label}
               </span>

@@ -19,7 +19,7 @@ export function Navigation() {
   return (
     <>
       {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0B0B0F]/90 backdrop-blur-md border-t border-[#1D1D24] pb-safe">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-paper-white/90 backdrop-blur-md border-t-[3px] border-ink-black pb-safe">
         <div className="flex justify-around items-center h-16 px-4">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
@@ -30,7 +30,7 @@ export function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center justify-center -mt-6 rounded-full bg-[#4DA6FF] text-[#0B0B0F] p-4 shadow-lg shadow-[#4DA6FF]/20"
+                  className="flex items-center justify-center -mt-6 rounded-full bg-marlboro-red text-paper-white p-4 shadow-[0px_4px_0px_0px_rgba(11,11,15,1)] border-[3px] border-ink-black active:translate-y-1 active:shadow-none transition-all"
                 >
                   <Icon size={28} strokeWidth={2.5} />
                 </Link>
@@ -42,8 +42,8 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex flex-col items-center justify-center w-full h-full space-y-1 text-xs",
-                  isActive ? "text-[#4DA6FF]" : "text-[#A1A1AA] hover:text-white transition-colors"
+                  "flex flex-col items-center justify-center w-full h-full space-y-1 text-xs font-bold uppercase tracking-widest",
+                  isActive ? "text-marlboro-red" : "text-ash-gray hover:text-ink-black transition-colors"
                 )}
               >
                 <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
@@ -54,10 +54,10 @@ export function Navigation() {
       </nav>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-0 bottom-0 z-50 bg-[#0B0B0F] border-r border-[#1D1D24] p-6">
+      <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-0 bottom-0 z-50 bg-paper-white border-r-[3px] border-ink-black p-6">
         <div className="mb-10 flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-[#4DA6FF]" /> {/* Logo Placeholder */}
-          <span className="text-2xl font-bold tracking-tight text-white">Smory</span>
+          <div className="w-8 h-8 rounded bg-marlboro-red border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)]" /> {/* Logo Placeholder */}
+          <span className="text-2xl font-bold tracking-tight text-ink-black">Smory</span>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -70,13 +70,13 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-4 px-4 py-3 rounded-2xl text-lg font-medium transition-all",
+                  "flex items-center gap-4 px-4 py-3 border-[2px] border-transparent font-bold uppercase tracking-widest transition-all",
                   isActive 
-                    ? "bg-[#1D1D24] text-white" 
-                    : "text-[#A1A1AA] hover:text-white hover:bg-[#1D1D24]/50"
+                    ? "bg-ink-black text-paper-white shadow-[4px_4px_0px_0px_rgba(225,29,72,1)]" 
+                    : "text-ash-gray hover:text-ink-black hover:border-ink-black hover:shadow-[4px_4px_0px_0px_rgba(11,11,15,0.1)]"
                 )}
               >
-                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} className={isActive ? "text-[#4DA6FF]" : ""} />
+                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} className={isActive ? "text-marlboro-red" : ""} />
                 {item.label}
               </Link>
             );

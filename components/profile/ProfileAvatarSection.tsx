@@ -20,26 +20,26 @@ export function ProfileAvatarSection({ username, species, joinDate }: ProfileAva
         <PixelAvatar 
           src="/pixel-fox.png" 
           size="xl" 
-          className="bg-[#0B0B0F] border-4 border-[#4DA6FF] shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] z-10" 
+          className="bg-paper-white z-10" 
         />
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
-          <Edit2 className="text-white" size={32} />
+        <div className="absolute inset-0 bg-ink-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
+          <Edit2 className="text-paper-white" size={32} />
         </div>
       </motion.div>
       
       <div className="mt-6 flex flex-col items-center">
         <div className="flex items-center gap-3 mb-1">
-          <h2 className="text-3xl font-bold text-white tracking-tight" style={{ textShadow: "3px 3px 0px rgba(0,0,0,0.5)" }}>
+          <h2 className="text-3xl font-bold text-ink-black tracking-tight" style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}>
             {username}
           </h2>
-          <button className="text-[#A1A1AA] hover:text-white transition-colors">
+          <button className="text-ash-gray hover:text-ink-black transition-colors">
             <Settings size={20} />
           </button>
         </div>
-        <p className="text-[#4DA6FF] font-bold uppercase tracking-widest text-sm mb-2">
+        <p className="text-marlboro-red font-bold uppercase tracking-widest text-sm mb-2">
           Level 4 {species}
         </p>
-        <p className="text-[#A1A1AA] text-xs uppercase tracking-widest font-bold">
+        <p className="text-ash-gray text-xs uppercase tracking-widest font-bold">
           Joined {joinDate}
         </p>
       </div>
