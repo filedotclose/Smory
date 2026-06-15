@@ -1,20 +1,50 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { Navigation } from "@/components/layout/Navigation";
+import { AuthenticatedLayoutWrapper } from "@/components/layout/AuthenticatedLayoutWrapper";
 import { Toaster } from "sonner";
+import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Smory | Every cigarette has a story",
+  title: "Smory | Every smoke tells a story",
   description: "An anonymous social network for smokers. Community, identity, and behavioral intelligence.",
   manifest: "/manifest.json",
+
+  // ── Apple PWA Meta Tags ──────────────────────────────────
+  appleWebApp: {
+    capable: true,
+    title: "Smory",
+    statusBarStyle: "default",
+  },
+
+  // ── Standard PWA Meta ────────────────────────────────────
+  applicationName: "Smory",
+  formatDetection: {
+    telephone: false,
+  },
+
+  // ── Icons ────────────────────────────────────────────────
+  icons: {
+    icon: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
-export const viewport = {
-  themeColor: "#0B0B0F",
+export const viewport: Viewport = {
+  themeColor: "#E11D48",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -29,11 +59,11 @@ export default function RootLayout({
       className={`${inter.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#0B0B0F] text-white overflow-x-hidden">
+        <ServiceWorkerRegistrar />
         <Providers>
-          <Navigation />
-          <main className="flex-1 pb-20 lg:pb-0 lg:pl-64">
+          <AuthenticatedLayoutWrapper>
             {children}
-          </main>
+          </AuthenticatedLayoutWrapper>
           <Toaster theme="dark" position="top-center" />
         </Providers>
       </body>
