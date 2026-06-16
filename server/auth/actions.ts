@@ -99,5 +99,31 @@ export async function getCurrentUser() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  return prisma.user.findUnique({ where: { id: user.id } });
+  
+  let dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+
+  // Failsafe: If the database was wiped but the user still has an active browser session,
+  // we auto-create a fresh profile for them so the app doesn't break.
+  if (!dbUser) {
+    const speciesList = ['Fox', 'Wolf', 'Cat', 'Dragon', 'Owl', 'Rabbit'];
+    const randomSpecies = speciesList[Math.floor(Math.random() * speciesList.length)];
+    const randomAlias = `Smoker${Math.floor(Math.random() * 100000)}`;
+
+    try {
+      dbUser = await prisma.user.create({
+        data: {
+          id: user.id,
+          anonymous_username: randomAlias,
+          avatar_species: randomSpecies,
+        }
+      });
+    } catch (err) {
+      console.error("Failed to auto-create profile during getCurrentUser:", err);
+      // If creation fails, we must force logout so they aren't trapped in a ghost state
+      await supabase.auth.signOut();
+      return null;
+    }
+  }
+
+  return dbUser;
 }
