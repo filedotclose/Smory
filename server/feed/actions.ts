@@ -2,31 +2,40 @@
 
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/server/auth/actions";
+import { getFriends } from "@/server/friends/actions";
 import { revalidatePath } from "next/cache";
 
 export async function getFeed() {
+  const user = await getCurrentUser();
+  let friendIds: string[] = [];
+
+  if (user) {
+    const friends = await getFriends();
+    friendIds = friends.map((f: any) => f.id);
+  }
+
   return prisma.post.findMany({
+    where: {
+      OR: [
+        { audience: "PUBLIC" },
+        { 
+          audience: "FRIENDS", 
+          authorId: user ? { in: [...friendIds, user.id] } : undefined 
+        }
+      ]
+    },
     include: {
       author: true,
-      community: true
+      puffs: true,
+      insightReactions: true,
+      replies: true
     },
     orderBy: { created_at: 'desc' },
     take: 20
   });
 }
 
-export async function getCommunities() {
-  try {
-    return await prisma.community.findMany({
-      orderBy: { name: 'asc' }
-    });
-  } catch (error) {
-    console.error("Failed to fetch communities:", error);
-    return [];
-  }
-}
-
-export async function createPost(content: string, communityId: string) {
+export async function createPost(content: string, audience: "PUBLIC" | "FRIENDS" = "PUBLIC") {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -41,15 +50,11 @@ export async function createPost(content: string, communityId: string) {
       return { error: "Post cannot exceed 280 characters." };
     }
 
-    if (!communityId) {
-      return { error: "Please select a community for your post." };
-    }
-
     const post = await prisma.post.create({
       data: {
         content: content.trim(),
         authorId: user.id,
-        communityId: communityId,
+        audience: audience,
       },
     });
 
@@ -60,3 +65,4 @@ export async function createPost(content: string, communityId: string) {
     return { error: error.message || "Failed to create post." };
   }
 }
+

@@ -5,6 +5,7 @@ import { Providers } from "@/components/providers";
 import { AuthenticatedLayoutWrapper } from "@/components/layout/AuthenticatedLayoutWrapper";
 import { Toaster } from "sonner";
 import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
+import { InstallPwaModal } from "@/components/pwa/InstallPwaModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -60,6 +61,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#0B0B0F] text-white overflow-x-hidden">
         <ServiceWorkerRegistrar />
+        <InstallPwaModal />
         <Providers>
           <AuthenticatedLayoutWrapper>
             {children}

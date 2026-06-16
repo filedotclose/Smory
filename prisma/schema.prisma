@@ -11,6 +11,7 @@ datasource db {
 model User {
   id                 String     @id @default(uuid())
   anonymous_username String     @unique
+  display_name       String?    // Optional, shown to friends
   avatar_species     String     @default("Fox") // Fox, Wolf, Cat, Dragon, Owl, Rabbit
   created_at         DateTime   @default(now())
   updated_at         DateTime   @updatedAt
@@ -20,6 +21,15 @@ model User {
   insights           Insight[]
   wrappedReports     WrappedReport[]
   communities        CommunityMember[]
+  
+  // New social relations
+  puffs              Puff[]
+  insightReactions   InsightReaction[]
+  replies            Reply[]
+  messages           Message[]
+  sentRequests       Friendship[] @relation("FriendshipSender")
+  receivedRequests   Friendship[] @relation("FriendshipReceiver")
+  notifications      Notification[]
 }
 
 model Community {
@@ -30,7 +40,7 @@ model Community {
   created_at  DateTime @default(now())
   
   members     CommunityMember[]
-  posts       Post[]
+  messages    Message[]
 }
 
 model CommunityMember {
@@ -48,13 +58,93 @@ model CommunityMember {
 model Post {
   id          String    @id @default(uuid())
   authorId    String
-  communityId String
   content     String
+  audience    String    @default("PUBLIC") // PUBLIC, FRIENDS
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
 
   author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Social interactions
+  puffs            Puff[]
+  insightReactions InsightReaction[]
+  replies          Reply[]
+  notifications    Notification[]
+}
+
+model Puff {
+  id         String   @id @default(uuid())
+  userId     String
+  postId     String
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model InsightReaction {
+  id         String   @id @default(uuid())
+  userId     String
+  postId     String
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Reply {
+  id         String   @id @default(uuid())
+  content    String
+  userId     String
+  postId     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  content     String
+  userId      String
+  communityId String
+  created_at  DateTime @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+}
+
+model Friendship {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  status     String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  sender     User     @relation("FriendshipSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User     @relation("FriendshipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+}
+
+model Notification {
+  id            String   @id @default(uuid())
+  userId        String   // Receiver
+  actorId       String?  // Who caused it
+  type          String   // PUFF, INSIGHT, REPLY, FRIEND_REQUEST
+  content       String?
+  isRead        Boolean  @default(false)
+  relatedPostId String?
+  created_at    DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post          Post?    @relation(fields: [relatedPostId], references: [id], onDelete: Cascade)
 }
 
 model Log {

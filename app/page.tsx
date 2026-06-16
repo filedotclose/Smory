@@ -2,11 +2,16 @@ import { PostCard } from "@/components/feed/PostCard";
 import { getFeed } from "@/server/feed/actions";
 import { PixelParticleBackground } from "@/components/ui/pixel/PixelParticleBackground";
 import { FeedHeader } from "@/components/feed/FeedHeader";
+import { getCurrentUser } from "@/server/auth/actions";
+import { getFriends } from "@/server/friends/actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const posts = await getFeed();
+  const user = await getCurrentUser();
+  const friends = await getFriends();
+  const friendIds = new Set(friends.map((f: any) => f.id));
 
   return (
     <div className="min-h-screen relative bg-checkered">
@@ -22,7 +27,11 @@ export default async function Home() {
             </div>
           ) : (
             posts.map((post) => (
-              <PostCard key={post.id} post={post as any} />
+              <PostCard 
+                key={post.id} 
+                post={{...post, isFriend: friendIds.has(post.authorId)} as any} 
+                currentUserId={user?.id}
+              />
             ))
           )}
         </div>
@@ -30,3 +39,4 @@ export default async function Home() {
     </div>
   );
 }
+

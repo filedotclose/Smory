@@ -65,6 +65,7 @@ export default function PixiWrapper({ type, density }: PixiWrapperProps) {
       }
 
       app.ticker.add(() => {
+        const now = Date.now() / 1000;
         particles.forEach((p) => {
           p.sprite.y -= p.speed;
           if (p.sprite.y < -10) {
@@ -73,7 +74,7 @@ export default function PixiWrapper({ type, density }: PixiWrapperProps) {
           }
 
           if (type === "smoke" || type === "stars") {
-            p.sprite.alpha = Math.abs(Math.sin(Date.now() / 1000 + p.xOff)) * 0.5 + 0.1;
+            p.sprite.alpha = Math.abs(Math.sin(now + p.xOff)) * 0.5 + 0.1;
           }
         });
       });

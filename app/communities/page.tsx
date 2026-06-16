@@ -1,57 +1,22 @@
 import { CommunityCard } from "@/components/communities/CommunityCard";
 import { PixelParticleBackground } from "@/components/ui/pixel/PixelParticleBackground";
 import { Compass } from "lucide-react";
+import { getCommunities } from "@/server/communities/actions";
+import { getCurrentUser } from "@/server/auth/actions";
 
 export const metadata = {
   title: "Communities | Smory",
 };
 
-const COMMUNITIES = [
-  {
-    id: "1",
-    name: "Night Owls",
-    description: "For those who find their peace between 1 AM and 4 AM. Dark thoughts, deep reflections, and the quiet crackle of burning paper.",
-    memberCount: 1420,
-    themeColor: "#0B0B0F" // Ink Black
-  },
-  {
-    id: "2",
-    name: "Coffee & Cigarettes",
-    description: "The classic combination. Discussing morning routines, the perfect roast, and the first drag of the day.",
-    memberCount: 893,
-    themeColor: "#EAB308" // Filter Gold
-  },
-  {
-    id: "3",
-    name: "Quitting Support",
-    description: "Trying to stop? Or taking a break? Lean on others who understand the struggle of putting out the last one.",
-    memberCount: 2155,
-    themeColor: "#22C55E" // Green
-  },
-  {
-    id: "4",
-    name: "Creative Block",
-    description: "Writers, artists, coders, and thinkers stepping outside for a moment to find the missing piece of the puzzle.",
-    memberCount: 654,
-    themeColor: "#E11D48" // Marlboro Red
-  },
-  {
-    id: "5",
-    name: "Old Souls",
-    description: "Vinyl records, classic literature, and unfiltered conversations. A place that feels like a smoky 1920s jazz club.",
-    memberCount: 432,
-    themeColor: "#F97316" // Orange
-  },
-  {
-    id: "6",
-    name: "The Commute",
-    description: "Stuck in traffic or waiting for the train. Sharing the fleeting moments of urban transit.",
-    memberCount: 1105,
-    themeColor: "#3b82f6" // Blue
-  }
-];
+export const dynamic = "force-dynamic";
 
-export default function CommunitiesPage() {
+export default async function CommunitiesPage() {
+  const communities = await getCommunities();
+  const user = await getCurrentUser();
+
+  // Pre-assigned colors based on index for variety
+  const colors = ["#0B0B0F", "#EAB308", "#22C55E", "#E11D48", "#F97316", "#3b82f6"];
+
   return (
     <div className="min-h-screen relative p-4 sm:p-6 lg:p-8 bg-checkered">
       <PixelParticleBackground type="dust" density={30} className="fixed inset-0 opacity-20 pointer-events-none z-0" />
@@ -70,11 +35,25 @@ export default function CommunitiesPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
-          {COMMUNITIES.map((community) => (
-            <CommunityCard key={community.id} {...community} />
+          {communities.map((community, idx) => (
+            <CommunityCard 
+              key={community.id} 
+              id={community.id}
+              name={community.name}
+              description={community.description || ""}
+              memberCount={community._count?.members || 0}
+              themeColor={colors[idx % colors.length]}
+              isJoined={community.members && community.members.length > 0}
+            />
           ))}
+          {communities.length === 0 && (
+            <div className="col-span-full text-center p-12 bg-paper-white border-[3px] border-ink-black shadow-[8px_8px_0px_0px_rgba(11,11,15,1)]">
+              <p className="font-bold text-ink-black uppercase tracking-widest text-sm">No communities found. Run the seed script.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
+

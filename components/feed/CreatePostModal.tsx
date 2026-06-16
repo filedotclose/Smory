@@ -5,14 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PixelCard } from "@/components/ui/pixel/PixelCard";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { X, Send, Users, PenSquare } from "lucide-react";
-import { createPost, getCommunities } from "@/server/feed/actions";
-
-interface Community {
-  id: string;
-  name: string;
-  description: string | null;
-}
+import { X, Send, Globe, Users, PenSquare } from "lucide-react";
+import { createPost } from "@/server/feed/actions";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -21,21 +15,13 @@ interface CreatePostModalProps {
 
 export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [content, setContent] = useState("");
-  const [communities, setCommunities] = useState<Community[]>([]);
-  const [selectedCommunityId, setSelectedCommunityId] = useState("");
+  const [audience, setAudience] = useState<"PUBLIC" | "FRIENDS">("PUBLIC");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      // Fetch communities dynamically
-      getCommunities().then((data) => {
-        setCommunities(data);
-        if (data.length > 0) {
-          setSelectedCommunityId(data[0].id);
-        }
-      });
-      // Reset state on open
       setContent("");
+      setAudience("PUBLIC");
     }
   }, [isOpen]);
 
@@ -52,13 +38,8 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       return;
     }
 
-    if (!selectedCommunityId) {
-      toast.error("Please select a community.");
-      return;
-    }
-
     setIsLoading(true);
-    const result = await createPost(content, selectedCommunityId);
+    const result = await createPost(content, audience);
     setIsLoading(false);
 
     if (result.error) {
@@ -111,35 +92,39 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                {/* Community Selector */}
+                {/* Audience Selector */}
                 <div className="flex flex-col gap-2">
                   <label className="text-xs text-ink-black font-bold uppercase tracking-widest flex items-center gap-1.5">
-                    <Users size={14} />
-                    Select Community
+                    Select Audience
                   </label>
-                  {communities.length === 0 ? (
-                    <div className="text-xs text-ash-gray font-bold p-3 bg-paper-white border-[3px] border-ink-black border-dashed">
-                      Loading communities...
-                    </div>
-                  ) : (
-                    <select
-                      value={selectedCommunityId}
-                      onChange={(e) => setSelectedCommunityId(e.target.value)}
-                      className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black font-bold uppercase text-xs tracking-wider focus:outline-none focus:border-marlboro-red focus:shadow-[4px_4px_0px_0px_rgba(225,29,72,0.2)] transition-all appearance-none cursor-pointer"
-                      style={{
-                        backgroundImage: `url("data:image/svg+xml;utf8,<svg fill='none' stroke='%230B0B0F' stroke-width='3' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='square' stroke-linejoin='miter' d='M19 9l-7 7-7-7'></path></svg>")`,
-                        backgroundPosition: "right 1rem center",
-                        backgroundSize: "1.2em",
-                        backgroundRepeat: "no-repeat",
-                      }}
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setAudience("PUBLIC")}
+                      className={cn(
+                        "flex-1 py-3 px-4 flex items-center justify-center gap-2 border-[3px] font-bold text-xs uppercase tracking-widest transition-all",
+                        audience === "PUBLIC" 
+                          ? "bg-marlboro-red text-paper-white border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)]" 
+                          : "bg-paper-white text-ink-black border-ink-black hover:bg-marlboro-red/10"
+                      )}
                     >
-                      {communities.map((c) => (
-                        <option key={c.id} value={c.id} className="font-bold text-ink-black">
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
+                      <Globe size={16} />
+                      Public
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAudience("FRIENDS")}
+                      className={cn(
+                        "flex-1 py-3 px-4 flex items-center justify-center gap-2 border-[3px] font-bold text-xs uppercase tracking-widest transition-all",
+                        audience === "FRIENDS" 
+                          ? "bg-marlboro-red text-paper-white border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)]" 
+                          : "bg-paper-white text-ink-black border-ink-black hover:bg-marlboro-red/10"
+                      )}
+                    >
+                      <Users size={16} />
+                      Friends Only
+                    </button>
+                  </div>
                 </div>
 
                 {/* Content Textarea */}

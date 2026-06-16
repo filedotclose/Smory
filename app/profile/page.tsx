@@ -2,10 +2,11 @@ import { ProfileAvatarSection } from "@/components/profile/ProfileAvatarSection"
 import { BadgeGrid } from "@/components/profile/BadgeGrid";
 import { PixelParticleBackground } from "@/components/ui/pixel/PixelParticleBackground";
 import { PixelCard } from "@/components/ui/pixel/PixelCard";
-import { getCurrentUser } from "@/server/auth/actions";
+import { getCurrentUser, logout } from "@/server/auth/actions";
+import { getFriends, getPendingRequests } from "@/server/friends/actions";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
-import { logout } from "@/server/auth/actions";
+import { FriendsSection } from "@/components/profile/FriendsSection";
 
 export const metadata = {
   title: "Profile | Smory",
@@ -17,6 +18,9 @@ export default async function ProfilePage() {
   if (!user) {
     redirect("/auth");
   }
+
+  const friends = await getFriends();
+  const requests = await getPendingRequests();
 
   return (
     <div className="min-h-screen relative pb-24 bg-checkered">
@@ -44,7 +48,7 @@ export default async function ProfilePage() {
           joinDate={new Date(user.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
         />
 
-        <div className="max-w-4xl mx-auto px-4 mt-8 mb-12">
+        <div className="max-w-4xl mx-auto px-4 mt-8 mb-8">
           <div className="grid grid-cols-3 gap-4">
             <PixelCard className="text-center p-4">
               <p className="text-3xl font-bold text-ink-black mb-1" style={{ textShadow: "2px 2px 0px rgba(11,11,15,0.1)" }}>12</p>
@@ -60,6 +64,8 @@ export default async function ProfilePage() {
             </PixelCard>
           </div>
         </div>
+
+        <FriendsSection initialFriends={friends} initialRequests={requests} />
 
         <BadgeGrid />
       </div>

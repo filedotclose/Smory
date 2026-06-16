@@ -10,6 +10,7 @@ import { AgeVerificationModal } from "@/components/auth/AgeVerificationModal";
 import { WelcomeGraphics } from "@/components/auth/WelcomeGraphics";
 import { PixelCard } from "@/components/ui/pixel/PixelCard";
 import { BrutalistMarquee } from "@/components/welcome/BrutalistMarquee";
+import { FloatingIconsBackground } from "@/components/welcome/FloatingIconsBackground";
 import { Flame, Activity, Compass, ShieldCheck, ChevronDown, ChevronUp } from "lucide-react";
 
 // Dynamic imports for heavy components
@@ -85,6 +86,7 @@ export default function WelcomePage() {
         density={40}
         className="opacity-25 fixed inset-0 pointer-events-none"
       />
+      <FloatingIconsBackground />
 
       {/* ── Sticky Glassmorphism Navbar ───────────────────── */}
       <nav className="sticky top-0 z-[60] w-full bg-paper-white/80 backdrop-blur-md border-b-[3px] border-ink-black/10">

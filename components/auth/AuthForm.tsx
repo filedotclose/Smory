@@ -13,7 +13,7 @@ export function AuthForm() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [step, setStep] = useState<"credentials" | "otp" | "loading">("credentials");
   const [identifier, setIdentifier] = useState("");
-  const [type, setType] = useState<"email" | "phone">("email");
+  const [type, setType] = useState<"email">("email");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,9 +37,9 @@ export function AuthForm() {
         setStep("credentials");
       } else if (res?.requireOtp) {
         setIdentifier(res.identifier as string);
-        setType(res.type as "email" | "phone");
+        setType("email");
         setStep("otp");
-        toast.success(`OTP sent to your ${res.type}`);
+        toast.success(`OTP sent to your email`);
       }
     }
   };
@@ -109,13 +109,13 @@ export function AuthForm() {
             <div className="space-y-4">
               <div>
                 <label className="text-xs text-ash-gray uppercase font-bold tracking-wider mb-1 block">
-                  Email or Phone
+                  Email
                 </label>
                 <input
-                  name="emailOrPhone"
-                  type="text"
+                  name="email"
+                  type="email"
                   required
-                  placeholder="name@example.com or +1234567890"
+                  placeholder="name@example.com"
                   className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black focus:outline-none focus:border-marlboro-red focus:shadow-[4px_4px_0px_0px_rgba(225,29,72,0.2)] transition-all font-medium"
                 />
               </div>
@@ -127,9 +127,16 @@ export function AuthForm() {
                   name="password"
                   type="password"
                   required
+                  pattern={mode === "signup" ? "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" : undefined}
+                  title={mode === "signup" ? "Must contain at least one number and one uppercase and lowercase letter, and at least 6 or more characters" : undefined}
                   placeholder="••••••••"
                   className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black focus:outline-none focus:border-marlboro-red focus:shadow-[4px_4px_0px_0px_rgba(225,29,72,0.2)] transition-all font-medium"
                 />
+                {mode === "signup" && (
+                  <p className="text-[10px] text-ash-gray mt-1 font-medium">
+                    Must contain at least 1 uppercase, 1 lowercase, and 1 number.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -145,48 +152,36 @@ export function AuthForm() {
         )}
 
         {step === "otp" && (
-          <motion.form
+          <motion.div
             key="otp"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            onSubmit={handleVerify}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 text-center py-6"
           >
-            <div className="text-center mb-4">
-              <h3 className="text-xl font-bold text-ink-black mb-2">Verify {type === "phone" ? "Phone" : "Email"}</h3>
-              <p className="text-ash-gray text-sm font-medium">Enter the code sent to {identifier}</p>
+            <div className="mb-2">
+              <div className="w-16 h-16 bg-filter-gold rounded-full mx-auto flex items-center justify-center mb-4 shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] border-[3px] border-ink-black">
+                <span className="text-2xl">✉️</span>
+              </div>
+              <h3 className="text-2xl font-black text-ink-black mb-2 uppercase tracking-tight">Check your email</h3>
+              <p className="text-ink-black font-medium text-sm leading-relaxed">
+                We've sent a magic verification link to<br/>
+                <strong className="text-marlboro-red">{identifier}</strong>
+              </p>
             </div>
+            
+            <p className="text-xs text-ash-gray font-medium mt-2">
+              (Supabase requires you to click the link in your email since we haven't set up custom SMTP for OTP codes yet)
+            </p>
 
-            <div>
-              <label className="text-xs text-ash-gray uppercase font-bold tracking-wider mb-1 block">
-                Verification Code
-              </label>
-              <input
-                name="token"
-                type="text"
-                required
-                placeholder="123456"
-                className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black font-bold text-center tracking-[0.5em] focus:outline-none focus:border-marlboro-red focus:shadow-[4px_4px_0px_0px_rgba(225,29,72,0.2)] transition-all text-xl"
-              />
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className="mt-4 w-full bg-filter-gold text-ink-black font-bold p-3 uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] border-[3px] border-ink-black active:shadow-none active:translate-y-1 transition-all"
-            >
-              Verify & Enter
-            </motion.button>
             <button
               type="button"
               onClick={() => setStep("credentials")}
-              className="mt-2 text-xs text-ash-gray hover:text-marlboro-red transition-colors uppercase tracking-widest font-bold"
+              className="mt-6 text-xs text-ash-gray hover:text-marlboro-red transition-colors uppercase tracking-widest font-bold"
             >
-              Go Back
+              Go Back to Login
             </button>
-          </motion.form>
+          </motion.div>
         )}
       </AnimatePresence>
     </PixelCard>

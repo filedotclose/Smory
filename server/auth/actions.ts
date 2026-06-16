@@ -6,21 +6,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function login(formData: FormData) {
-  const emailOrPhone = formData.get("emailOrPhone") as string;
+  const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   const supabase = await createClient();
   
-  let authOptions: any = { password };
-  
-  // Basic phone number check (can be improved)
-  if (/^\+?[1-9]\d{1,14}$/.test(emailOrPhone)) {
-    authOptions.phone = emailOrPhone;
-  } else {
-    authOptions.email = emailOrPhone;
-  }
-
-  const { error } = await supabase.auth.signInWithPassword(authOptions);
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     return { error: error.message };
@@ -31,48 +22,41 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
-  const emailOrPhone = formData.get("emailOrPhone") as string;
+  const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   const supabase = await createClient();
 
-  let authOptions: any = { password };
-  const isPhone = /^\+?[1-9]\d{1,14}$/.test(emailOrPhone);
-  
-  if (isPhone) {
-    authOptions.phone = emailOrPhone;
-  } else {
-    authOptions.email = emailOrPhone;
-  }
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 
+    (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://smory-sigma.vercel.app');
 
-  const { data, error } = await supabase.auth.signUp(authOptions);
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: `${siteUrl}/auth/callback`
+    }
+  });
 
   if (error) {
     return { error: error.message };
   }
 
   // We don't create profile yet, we wait for OTP verification.
-  return { success: true, requireOtp: true, type: isPhone ? 'phone' : 'email', identifier: emailOrPhone };
+  return { success: true, requireOtp: true, type: 'email', identifier: email };
 }
 
 export async function verifyOTP(formData: FormData) {
   const identifier = formData.get("identifier") as string;
   const token = formData.get("token") as string;
-  const type = formData.get("type") as 'phone' | 'email';
 
   const supabase = await createClient();
 
-  const verifyType = type === 'phone' ? 'sms' : 'signup';
-  
-  const verifyOptions: any = {
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: identifier,
     token,
-    type: verifyType,
-  };
-
-  if (type === 'phone') verifyOptions.phone = identifier;
-  else verifyOptions.email = identifier;
-
-  const { data, error } = await supabase.auth.verifyOtp(verifyOptions);
+    type: 'signup',
+  });
 
   if (error) {
     return { error: error.message };
