@@ -27,7 +27,7 @@ export async function togglePuff(postId: string) {
       // Notify post author
       const post = await prisma.post.findUnique({ where: { id: postId }, select: { authorId: true } });
       if (post && post.authorId !== user.id) {
-        await createNotification(post.authorId, "PUFF", null, postId);
+        await createNotification(post.authorId, "PUFF", undefined, postId);
       }
 
       return { success: true, puffed: true };
@@ -60,7 +60,7 @@ export async function toggleInsight(postId: string) {
       // Notify post author
       const post = await prisma.post.findUnique({ where: { id: postId }, select: { authorId: true } });
       if (post && post.authorId !== user.id) {
-        await createNotification(post.authorId, "INSIGHT", null, postId);
+        await createNotification(post.authorId, "INSIGHT", undefined, postId);
       }
 
       return { success: true, insighted: true };
