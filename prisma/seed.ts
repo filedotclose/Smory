@@ -1,30 +1,80 @@
 import { PrismaClient } from '@prisma/client'
+import { createClient } from '@supabase/supabase-js'
 
 const prisma = new PrismaClient()
+
+// Initialize Supabase Admin Client using Service Role Key
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SECRET_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function main() {
   console.log('Seeding database...')
 
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("Missing Supabase env vars. Make sure .env is loaded.");
+  }
+
+  // Wipe database
+  await prisma.log.deleteMany();
+  await prisma.post.deleteMany();
+  await prisma.communityMember.deleteMany();
+  await prisma.community.deleteMany();
+  await prisma.user.deleteMany();
+  console.log("Database wiped");
+
   // 1. Create Users
   const usersData = [
-    { anonymous_username: 'AshFox21', avatar_species: 'Fox' },
-    { anonymous_username: 'NightOwl99', avatar_species: 'Owl' },
-    { anonymous_username: 'VapeLord12', avatar_species: 'Dragon' },
-    { anonymous_username: 'StressedOut', avatar_species: 'Cat' },
-    { anonymous_username: 'Quitter99', avatar_species: 'Wolf' },
+    { email: 'fox@smory.app', password: 'Password123!', anonymous_username: 'AshFox21', avatar_species: 'Fox' },
+    { email: 'owl@smory.app', password: 'Password123!', anonymous_username: 'NightOwl99', avatar_species: 'Owl' },
+    { email: 'dragon@smory.app', password: 'Password123!', anonymous_username: 'VapeLord12', avatar_species: 'Dragon' },
+    { email: 'cat@smory.app', password: 'Password123!', anonymous_username: 'StressedOut', avatar_species: 'Cat' },
+    { email: 'wolf@smory.app', password: 'Password123!', anonymous_username: 'Quitter99', avatar_species: 'Wolf' },
   ]
 
-  const users = await Promise.all(
-    usersData.map((data) =>
-      prisma.user.upsert({
-        where: { anonymous_username: data.anonymous_username },
-        update: {},
-        create: data,
-      })
-    )
-  )
+  const users = []
+  
+  for (const data of usersData) {
+    // Try to create auth user
+    let authUser;
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email: data.email,
+      password: data.password,
+      email_confirm: true, // Auto-confirm so we can login immediately
+    });
 
-  console.log(`Created ${users.length} users`)
+    if (authError) {
+      if ((authError as any).code === 'email_exists' || authError.message.includes('registered')) {
+        // If already exists, fetch the user ID
+        const { data: existingUsers } = await supabase.auth.admin.listUsers();
+        authUser = existingUsers.users.find(u => u.email === data.email);
+      } else {
+        console.error("Failed to create user", data.email, authError);
+        continue;
+      }
+    } else {
+      authUser = authData.user;
+    }
+
+    if (authUser) {
+      // Upsert into Prisma using the real Auth ID
+      const dbUser = await prisma.user.upsert({
+        where: { id: authUser.id },
+        update: {
+          anonymous_username: data.anonymous_username,
+          avatar_species: data.avatar_species,
+        },
+        create: {
+          id: authUser.id,
+          anonymous_username: data.anonymous_username,
+          avatar_species: data.avatar_species,
+        },
+      });
+      users.push(dbUser);
+    }
+  }
+
+  console.log(`Created ${users.length} users in Supabase Auth & Prisma`)
 
   // 2. Create Communities
   const communitiesData = [
@@ -83,13 +133,11 @@ async function main() {
 
   for (let i = 0; i < 15; i++) {
     const randomUser = users[Math.floor(Math.random() * users.length)]
-    const randomCommunity = communities[Math.floor(Math.random() * communities.length)]
     const randomContent = postContents[Math.floor(Math.random() * postContents.length)]
 
     await prisma.post.create({
       data: {
         authorId: randomUser.id,
-        communityId: randomCommunity.id,
         content: randomContent,
       },
     })
