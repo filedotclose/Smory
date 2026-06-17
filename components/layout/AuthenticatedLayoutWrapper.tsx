@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Navigation } from "./Navigation";
+import { AutoPushSubscriber } from "@/components/notifications/AutoPushSubscriber";
 
 const PUBLIC_ROUTES = ["/welcome", "/auth", "/terms", "/privacy"];
 
@@ -21,6 +22,7 @@ export function AuthenticatedLayoutWrapper({
 
   return (
     <>
+      <AutoPushSubscriber />
       <Navigation />
       <main className="flex-1 pb-20 lg:pb-0 lg:pl-64">
         {children}
