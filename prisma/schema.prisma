@@ -30,6 +30,7 @@ model User {
   sentRequests       Friendship[] @relation("FriendshipSender")
   receivedRequests   Friendship[] @relation("FriendshipReceiver")
   notifications      Notification[]
+  pushSubscriptions  PushSubscription[]
 }
 
 model Community {
@@ -178,4 +179,17 @@ model WrappedReport {
   created_at DateTime @default(now())
 
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PushSubscription {
+  id         String   @id @default(uuid())
+  userId     String
+  endpoint   String
+  p256dh     String
+  auth       String
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
 }

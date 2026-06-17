@@ -7,6 +7,7 @@ import { getFriends, getPendingRequests } from "@/server/friends/actions";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { FriendsSection } from "@/components/profile/FriendsSection";
+import { PushNotificationSettings } from "@/components/profile/PushNotificationSettings";
 
 export const metadata = {
   title: "Profile | Smory",
@@ -28,9 +29,16 @@ export default async function ProfilePage() {
       
       <div className="relative z-10">
         <header className="flex justify-between items-center p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-ink-black tracking-tight uppercase" style={{ textShadow: "2px 2px 0px rgba(11,11,15,0.1)" }}>
-            Character Card
-          </h1>
+          <div className="flex items-center gap-3">
+            <svg viewBox="0 0 16 16" className="w-8 h-8 sm:w-10 sm:h-10 text-ink-black" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 2h10v12H3V2z" fill="#F8F8F2" stroke="currentColor" strokeWidth="2" />
+              <path d="M3 6h10v2H3V6z" fill="#E11D48" />
+              <path d="M6 2v4M8 2v4M10 2v4" stroke="currentColor" strokeWidth="2" />
+            </svg>
+            <h1 className="text-3xl sm:text-4xl font-bold text-ink-black tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}>
+              Your Case
+            </h1>
+          </div>
           <form action={logout}>
             <button 
               type="submit"
@@ -63,6 +71,10 @@ export default async function ProfilePage() {
               <p className="text-[10px] font-bold text-ash-gray uppercase tracking-widest">Badges</p>
             </PixelCard>
           </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 mt-8 mb-8">
+          <PushNotificationSettings />
         </div>
 
         <FriendsSection initialFriends={friends} initialRequests={requests} />

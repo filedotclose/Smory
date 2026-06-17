@@ -1,19 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Bell, PenSquare } from "lucide-react";
 import { CreatePostModal } from "./CreatePostModal";
+import { getUnreadNotificationCount } from "@/server/notifications/actions";
 
 export function FeedHeader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    getUnreadNotificationCount().then(setUnreadCount).catch(console.error);
+  }, []);
 
   return (
     <>
       <header className="mb-8 flex items-center justify-between">
         <div>
           <h1 
-            className="text-3xl font-bold text-ink-black tracking-tight uppercase" 
+            className="text-3xl sm:text-4xl font-bold text-ink-black tracking-tight uppercase" 
             style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}
           >
             Smory
@@ -29,9 +35,11 @@ export function FeedHeader() {
           >
             <Bell size={20} strokeWidth={2.5} />
             {/* Unread indicator */}
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-marlboro-red border-[2px] border-ink-black flex items-center justify-center text-[8px] font-bold text-paper-white">
-              3
-            </div>
+            {unreadCount > 0 && (
+              <div className="absolute -top-2 -right-2 w-5 h-5 bg-marlboro-red border-[2px] border-ink-black flex items-center justify-center text-[10px] font-bold text-paper-white shadow-[2px_2px_0px_0px_rgba(11,11,15,1)]">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </div>
+            )}
           </Link>
           <button 
             onClick={() => setIsModalOpen(true)}

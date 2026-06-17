@@ -24,7 +24,7 @@ export default async function CommunitiesPage() {
       <div className="relative z-10 max-w-5xl mx-auto pt-8">
         <header className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-ink-black tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}>
+            <h1 className="text-3xl sm:text-4xl font-bold text-ink-black tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}>
               Find Your Tribe
             </h1>
             <p className="text-marlboro-red text-sm mt-1 uppercase tracking-widest font-bold">Discover communities that fit your vibe</p>

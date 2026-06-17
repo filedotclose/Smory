@@ -14,7 +14,7 @@ export default function InsightsPage() {
       
       <div className="relative z-10 max-w-5xl mx-auto pt-8">
         <header className="mb-10">
-          <h1 className="text-3xl font-bold text-ink-black tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}>
+          <h1 className="text-3xl sm:text-4xl font-bold text-ink-black tracking-tight uppercase" style={{ textShadow: "3px 3px 0px rgba(11,11,15,0.1)" }}>
             Behavioral Insights
           </h1>
           <p className="text-marlboro-red text-sm mt-1 uppercase tracking-widest font-bold">Uncover your patterns</p>

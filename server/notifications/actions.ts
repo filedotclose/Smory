@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/server/auth/actions";
+import { sendPushNotification } from "./push-actions";
 
 export async function createNotification(
   userId: string, // Receiver
@@ -25,6 +26,29 @@ export async function createNotification(
         relatedPostId
       }
     });
+
+    // Send Web Push
+    let title = "New Interaction";
+    let body = "Someone interacted with your case.";
+    let url = "/notifications";
+
+    if (type === "PUFF") {
+      title = "🔥 You got a Puff";
+      body = `${actor.anonymous_username} puffed your post.`;
+    } else if (type === "INSIGHT") {
+      title = "💡 Insight Received";
+      body = `${actor.anonymous_username} found your post insightful.`;
+    } else if (type === "REPLY") {
+      title = "💬 New Reply";
+      body = `${actor.anonymous_username} replied: "${content?.substring(0, 30) || ''}..."`;
+    } else if (type === "FRIEND_REQUEST") {
+      title = "👤 Friend Request";
+      body = `${actor.anonymous_username} wants to join your circle.`;
+      url = "/profile";
+    }
+
+    await sendPushNotification(userId, { title, body, url });
+
   } catch (error) {
     console.error("Failed to create notification:", error);
   }
@@ -62,5 +86,19 @@ export async function markNotificationsAsRead() {
     });
   } catch (error) {
     console.error("Failed to mark notifications as read:", error);
+  }
+}
+
+export async function getUnreadNotificationCount() {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return 0;
+
+    return await prisma.notification.count({
+      where: { userId: user.id, isRead: false }
+    });
+  } catch (error) {
+    console.error("Failed to get unread notification count:", error);
+    return 0;
   }
 }

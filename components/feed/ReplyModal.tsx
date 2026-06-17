@@ -88,7 +88,7 @@ export function ReplyModal({ isOpen, onClose, postId, currentUserId }: ReplyModa
             className="relative z-10 w-full max-w-lg h-[80vh] sm:h-[600px] pointer-events-auto flex flex-col bg-paper-white sm:border-[4px] sm:border-ink-black sm:shadow-[8px_8px_0px_0px_rgba(11,11,15,1)]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b-[3px] border-ink-black/10 bg-paper-white z-20">
+            <div className="shrink-0 flex items-center justify-between p-4 border-b-[3px] border-ink-black/10 bg-paper-white z-20">
               <h2 className="text-lg font-bold text-ink-black uppercase tracking-tight">Replies</h2>
               <button
                 onClick={onClose}
@@ -137,7 +137,7 @@ export function ReplyModal({ isOpen, onClose, postId, currentUserId }: ReplyModa
             </div>
 
             {/* Input Bar */}
-            <form onSubmit={handleSubmit} className="p-4 border-t-[3px] border-ink-black/10 bg-paper-white flex gap-2 z-20">
+            <form onSubmit={handleSubmit} className="shrink-0 p-4 pb-6 sm:pb-4 border-t-[3px] border-ink-black/10 bg-paper-white flex gap-2 z-20">
               <input
                 type="text"
                 value={content}
