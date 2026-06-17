@@ -4,12 +4,16 @@ import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/server/auth/actions";
 import webpush from "web-push";
 
-// Initialize web-push with VAPID keys
-webpush.setVapidDetails(
-  "mailto:admin@smory.com",
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY as string,
-  process.env.VAPID_PRIVATE_KEY as string
-);
+// Initialize web-push with VAPID keys only if they exist (prevents build crashes)
+if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    "mailto:admin@smory.com",
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+} else {
+  console.warn("VAPID keys not found in environment. Push notifications will be disabled.");
+}
 
 export async function saveSubscription(subscription: any) {
   try {
