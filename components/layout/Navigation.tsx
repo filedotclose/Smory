@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Home, Users, PlusCircle, BarChart2, User } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -58,7 +59,9 @@ export function Navigation() {
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-0 bottom-0 z-50 bg-paper-white border-r-[3px] border-ink-black p-6">
         <div className="mb-10 flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-marlboro-red border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)]" /> {/* Logo Placeholder */}
+          <div className="w-8 h-8 rounded bg-marlboro-red border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] overflow-hidden flex items-center justify-center p-0.5">
+            <Image src="/icon-192x192.png" alt="Smory Logo" width={24} height={24} className="w-full h-full object-contain" />
+          </div>
           <span className="text-2xl font-bold tracking-tight text-ink-black">Smory</span>
         </div>
 

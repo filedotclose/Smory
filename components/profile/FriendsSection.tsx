@@ -208,19 +208,23 @@ export function FriendsSection({ initialFriends, initialRequests }: FriendsSecti
             </form>
 
             {searchResults && (
-              <div className="flex items-center justify-between p-4 border-[3px] border-ink-black bg-checkered">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-paper-white border-[2px] border-ink-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(11,11,15,1)]">
-                    {searchResults.avatar_species === 'Fox' ? '🦊' : searchResults.avatar_species === 'Wolf' ? '🐺' : '👤'}
+              <div className="space-y-3">
+                {searchResults.map((result: any) => (
+                  <div key={result.id} className="flex items-center justify-between p-4 border-[3px] border-ink-black bg-checkered">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-paper-white border-[2px] border-ink-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(11,11,15,1)]">
+                        {result.avatar_species === 'Fox' ? '🦊' : result.avatar_species === 'Wolf' ? '🐺' : '👤'}
+                      </div>
+                      <h4 className="font-bold text-ink-black uppercase tracking-tight">{result.anonymous_username}</h4>
+                    </div>
+                    <button 
+                      onClick={() => handleAddFriend(result.id)}
+                      className="bg-marlboro-red text-paper-white px-4 py-2 text-xs font-bold uppercase tracking-widest border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] active:translate-y-0.5 active:shadow-none transition-all"
+                    >
+                      Add
+                    </button>
                   </div>
-                  <h4 className="font-bold text-ink-black uppercase tracking-tight">{searchResults.anonymous_username}</h4>
-                </div>
-                <button 
-                  onClick={() => handleAddFriend(searchResults.id)}
-                  className="bg-marlboro-red text-paper-white px-4 py-2 text-xs font-bold uppercase tracking-widest border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] active:translate-y-0.5 active:shadow-none transition-all"
-                >
-                  Add
-                </button>
+                ))}
               </div>
             )}
           </div>

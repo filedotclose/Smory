@@ -63,6 +63,9 @@ export async function getNotifications() {
       where: { userId: user.id },
       orderBy: { created_at: "desc" },
       include: {
+        actor: {
+          select: { anonymous_username: true, avatar_species: true }
+        },
         post: {
           select: { content: true }
         }

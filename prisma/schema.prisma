@@ -34,6 +34,7 @@ model User {
   sentRequests       Friendship[] @relation("FriendshipSender")
   receivedRequests   Friendship[] @relation("FriendshipReceiver")
   notifications      Notification[]
+  actedNotifications Notification[] @relation("NotificationActor")
   pushSubscriptions  PushSubscription[]
 }
 
@@ -149,6 +150,7 @@ model Notification {
   created_at    DateTime @default(now())
 
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actor         User?    @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
   post          Post?    @relation(fields: [relatedPostId], references: [id], onDelete: Cascade)
 }
 

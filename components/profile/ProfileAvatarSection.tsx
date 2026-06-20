@@ -99,14 +99,6 @@ export function ProfileAvatarSection({ username, displayName, species, joinDate,
                   </p>
                 )}
               </div>
-              
-              <Link 
-                href="/settings" 
-                className="text-ash-gray hover:text-marlboro-red hover:rotate-45 transition-all p-1"
-                title="Edit Character Settings"
-              >
-                <Settings size={20} strokeWidth={2.5} />
-              </Link>
             </div>
 
             <div className="h-[2px] bg-ink-black/10 my-3" />

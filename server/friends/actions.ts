@@ -154,11 +154,22 @@ export async function getPendingRequests() {
 
 export async function searchUser(username: string) {
   try {
-    if (!username.trim()) return null;
-    return await prisma.user.findUnique({
-      where: { anonymous_username: username.trim() },
-      select: { id: true, anonymous_username: true, avatar_species: true }
+    const user = await getCurrentUser();
+    if (!user || !username.trim()) return null;
+
+    const users = await prisma.user.findMany({
+      where: {
+        anonymous_username: {
+          contains: username.trim(),
+          mode: "insensitive"
+        },
+        id: { not: user.id }
+      },
+      select: { id: true, anonymous_username: true, avatar_species: true },
+      take: 5
     });
+    
+    return users.length > 0 ? users : null;
   } catch (error) {
     console.error("Search User Error:", error);
     return null;

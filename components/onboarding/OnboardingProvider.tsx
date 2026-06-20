@@ -56,6 +56,9 @@ export function OnboardingProvider({ hasCompletedOnboarding, children }: Props) 
           setRun(true);
         }, 1000);
         return () => clearTimeout(timer);
+      } else {
+        // Silent sync to database if localStorage says completed but DB doesn't know yet
+        completeOnboarding().catch(console.error);
       }
     }
   }, [hasCompletedOnboarding]);
