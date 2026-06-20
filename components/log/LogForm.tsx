@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { Flame, Activity, Coffee, Moon, CloudRain, Briefcase, Camera, Image as ImageIcon } from "lucide-react";
 import confetti from "canvas-confetti";
 
+import { createLog } from "@/server/log/actions";
+
 // A fun pixelated confetti burst (using Marlboro Red)
 const triggerPixelBurst = () => {
   const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -33,6 +35,7 @@ const BRANDS = ["Marlboro Red", "Marlboro Gold", "Camel Crush", "American Spirit
 
 export function LogForm() {
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Step 1 State
   const [brand, setBrand] = useState<string | null>(null);
@@ -68,13 +71,23 @@ export function LogForm() {
   const handleNext = () => setStep(prev => prev + 1);
   const handleBack = () => setStep(prev => prev - 1);
   
-  const handleSubmit = () => {
-    // Optimistic UX
+  const handleSubmit = async () => {
+    if (!brand || !trigger) return;
+    
+    setIsSubmitting(true);
+    const result = await createLog(brand, trigger, intensity, photo || undefined);
+    setIsSubmitting(false);
+
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+
     triggerPixelBurst();
-    toast.success(`Log recorded: ${brand}. 1 day streak! 🔥`, {
+    toast.success(`Log recorded: ${brand}. 🔥`, {
       className: "border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] rounded-none font-bold text-ink-black"
     });
-    // Reset form after delay
+    
     setTimeout(() => {
       setStep(1);
       setBrand(null);

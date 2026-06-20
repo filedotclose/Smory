@@ -98,6 +98,9 @@ export default async function ProfilePage() {
                   </span>
                   <span className="text-[10px] font-bold text-ash-gray uppercase">Days</span>
                 </div>
+                <p className="text-[8px] text-ash-gray font-bold uppercase mt-1 tracking-wider leading-none">
+                  Login everyday to maintain streak
+                </p>
               </div>
 
               {/* Badges Widget */}

@@ -15,16 +15,43 @@ async function main() {
     console.error("Missing Supabase env vars. Make sure .env is loaded.");
   }
 
-  // Wipe database
+  // 1. Wipe database (except communities)
   await prisma.log.deleteMany();
+  await prisma.reply.deleteMany();
+  await prisma.puff.deleteMany();
+  await prisma.insightReaction.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.insight.deleteMany();
+  await prisma.wrappedReport.deleteMany();
+  await prisma.pushSubscription.deleteMany();
+  await prisma.friendship.deleteMany();
+  await prisma.message.deleteMany();
   await prisma.post.deleteMany();
   await prisma.communityMember.deleteMany();
-  await prisma.community.deleteMany();
   await prisma.user.deleteMany();
-  console.log("Database wiped");
+  console.log("Database wiped (except communities)");
 
-  // 1. Create Users
+  // 2. Create/Upsert Communities
+  const communitiesData = [
+    { name: 'College Night Owls', description: 'For those 3 AM study breaks' },
+    { name: 'The Break Room', description: 'Corporate stress relief' },
+    { name: 'Quitting Squad', description: 'Supporting each other to stop' },
+  ]
+
+  const communities = await Promise.all(
+    communitiesData.map((data) =>
+      prisma.community.upsert({
+        where: { name: data.name },
+        update: { description: data.description },
+        create: data,
+      })
+    )
+  )
+  console.log(`Ensured ${communities.length} communities exist`)
+
+  // 3. Create Users (Owner + Mock Users)
   const usersData = [
+    { email: 'owner@smory.app', password: 'Password123!', anonymous_username: 'SmoryOwner', avatar_species: 'Owl' },
     { email: 'fox@smory.app', password: 'Password123!', anonymous_username: 'AshFox21', avatar_species: 'Fox' },
     { email: 'owl@smory.app', password: 'Password123!', anonymous_username: 'NightOwl99', avatar_species: 'Owl' },
     { email: 'dragon@smory.app', password: 'Password123!', anonymous_username: 'VapeLord12', avatar_species: 'Dragon' },
@@ -35,19 +62,17 @@ async function main() {
   const users = []
   
   for (const data of usersData) {
-    // Try to create auth user
     let authUser;
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: data.email,
       password: data.password,
-      email_confirm: true, // Auto-confirm so we can login immediately
+      email_confirm: true,
     });
 
     if (authError) {
       if ((authError as any).code === 'email_exists' || authError.message.includes('registered')) {
-        // If already exists, fetch the user ID
         const { data: existingUsers } = await supabase.auth.admin.listUsers();
-        authUser = existingUsers.users.find(u => u.email === data.email);
+        authUser = existingUsers?.users?.find(u => u.email === data.email);
       } else {
         console.error("Failed to create user", data.email, authError);
         continue;
@@ -57,7 +82,6 @@ async function main() {
     }
 
     if (authUser) {
-      // Upsert into Prisma using the real Auth ID
       const dbUser = await prisma.user.upsert({
         where: { id: authUser.id },
         update: {
@@ -74,96 +98,158 @@ async function main() {
     }
   }
 
-  console.log(`Created ${users.length} users in Supabase Auth & Prisma`)
+  console.log(`Created/Linked ${users.length} users in Supabase Auth & Prisma`)
 
-  // 2. Create Communities
-  const communitiesData = [
-    { name: 'College Night Owls', description: 'For those 3 AM study breaks' },
-    { name: 'The Break Room', description: 'Corporate stress relief' },
-    { name: 'Quitting Squad', description: 'Supporting each other to stop' },
-  ]
+  const ownerUser = users.find(u => u.anonymous_username === 'SmoryOwner');
+  if (!ownerUser) {
+    throw new Error("Owner user was not created!");
+  }
 
-  const communities = await Promise.all(
-    communitiesData.map((data) =>
-      prisma.community.upsert({
-        where: { name: data.name },
-        update: {},
-        create: data,
-      })
-    )
-  )
+  // 4. Seed the Welcome Feed Post
+  const welcomePost = await prisma.post.create({
+    data: {
+      authorId: ownerUser.id,
+      content: "Hello users! Welcome to Smory. Let's keep this space cozy, helpful, and support each other on our journeys. Feel free to say hello below and share your goals! 🚬❌",
+    }
+  });
+  console.log('Created welcome post in feed')
 
-  console.log(`Created ${communities.length} communities`)
+  // 5. Seed Feed Comments (Replies) under the Welcome Post
+  const repliesData = [
+    { username: 'AshFox21', content: 'Hello! Excited to be here. Trying to limit my daily count.' },
+    { username: 'NightOwl99', content: "Hey everyone, love the clean pixel UI here. Let's do this!" },
+    { username: 'VapeLord12', content: 'Yo! Ready to quit the disposables. Nice to meet you all.' },
+    { username: 'StressedOut', content: 'Hello owner! Already logged my first trigger. This is going to be useful.' },
+    { username: 'Quitter99', content: 'Hey! Day 5 here and staying strong. Glad to have a supportive crew.' },
+  ];
 
-  // 3. Add members to communities
+  for (const reply of repliesData) {
+    const user = users.find(u => u.anonymous_username === reply.username);
+    if (user) {
+      await prisma.reply.create({
+        data: {
+          postId: welcomePost.id,
+          userId: user.id,
+          content: reply.content,
+        }
+      });
+    }
+  }
+  console.log('Created replies under welcome post')
+
+  // 6. Seed Standalone Feed Posts from Mock Users (as requested in feedback)
+  const standalonePostsData = [
+    { username: 'AshFox21', content: "Finally reached 24 hours smoke-free! The craving stats widget on the dashboard is super motivating." },
+    { username: 'NightOwl99', content: "Late night study session. Usually, I'd have smoked half a pack by now, but I'm holding strong with green tea." },
+    { username: 'VapeLord12', content: "Pro-tip for quitting: throw away all your empty pods/vapes. Out of sight, out of mind really works." },
+    { username: 'StressedOut', content: "Work is crazy today, but I managed to log a craving trigger instead of actually going out. Progress." },
+    { username: 'Quitter99', content: "Day 7 update: Taste and smell are starting to return. It's crazy how fast the body starts healing itself!" },
+  ];
+
+  for (const post of standalonePostsData) {
+    const user = users.find(u => u.anonymous_username === post.username);
+    if (user) {
+      await prisma.post.create({
+        data: {
+          authorId: user.id,
+          content: post.content,
+        }
+      });
+    }
+  }
+  console.log('Created standalone posts in feed')
+
+  // 7. Seed Community Memberships (Everyone joins all communities)
   for (const user of users) {
     for (const community of communities) {
-      // randomly join communities
-      if (Math.random() > 0.4) {
-        await prisma.communityMember.upsert({
-          where: {
-            userId_communityId: {
-              userId: user.id,
-              communityId: community.id,
-            },
-          },
-          update: {},
-          create: {
+      await prisma.communityMember.upsert({
+        where: {
+          userId_communityId: {
             userId: user.id,
             communityId: community.id,
           },
-        })
+        },
+        update: {},
+        create: {
+          userId: user.id,
+          communityId: community.id,
+        },
+      });
+    }
+  }
+  console.log('Registered community memberships')
+
+  // 8. Seed Community Conversations (Talks and chat messages)
+  const collegeCommunity = communities.find(c => c.name === 'College Night Owls');
+  const breakRoomCommunity = communities.find(c => c.name === 'The Break Room');
+  const quittingSquadCommunity = communities.find(c => c.name === 'Quitting Squad');
+
+  if (collegeCommunity) {
+    const collegeMessages = [
+      { username: 'NightOwl99', content: 'Anyone studying for finals right now? Need a virtual study partner.' },
+      { username: 'AshFox21', content: 'Yes! I have a chemistry exam tomorrow. Going crazy.' },
+      { username: 'NightOwl99', content: "Same, math here. Every time I get stuck on a proof, I reach for a smoke." },
+      { username: 'AshFox21', content: "Ugh, tell me about it. I'm trying chewing gum instead tonight. It's... okay." },
+      { username: 'VapeLord12', content: "Keep it up y'all. Take short walks instead. It actually helps clear the mind." },
+    ];
+    for (const msg of collegeMessages) {
+      const user = users.find(u => u.anonymous_username === msg.username);
+      if (user) {
+        await prisma.message.create({
+          data: {
+            communityId: collegeCommunity.id,
+            userId: user.id,
+            content: msg.content,
+          }
+        });
       }
     }
   }
 
-  // 4. Create Posts
-  const postContents = [
-    "Just unlocked the 'Stress Smoker' personality card. Pretty accurate honestly, only ever crave one during finals week 😅",
-    "Does anyone else feel like the 10 minute smoke break is the only actual break you get at work?",
-    "Day 3 of no smoking. The cravings are insane but looking at my health stats on the profile keeps me going.",
-    "Switched to a lighter brand. Small steps.",
-    "Why does coffee + cigarette hit so different? ☕️🚬",
-    "Logging my habits made me realize I only smoke when I talk to my boss. Talk about a trigger lol.",
-    "Does the PixiJS smoke animation on the feed look crazy to anyone else or is it just me?",
-    "Lost my vape again. This is the 3rd time this month.",
-    "Trying to cut down from 10 a day to 5. Wish me luck.",
-    "The Wrapped report told me I smoke mostly at 11 PM. Might need to fix my sleep schedule.",
-  ]
-
-  for (let i = 0; i < 15; i++) {
-    const randomUser = users[Math.floor(Math.random() * users.length)]
-    const randomContent = postContents[Math.floor(Math.random() * postContents.length)]
-
-    await prisma.post.create({
-      data: {
-        authorId: randomUser.id,
-        content: randomContent,
-      },
-    })
-  }
-
-  console.log('Created posts')
-
-  // 5. Create Logs
-  const triggers = ['Stress', 'Social', 'Boredom', 'After Meal', 'Waking Up']
-  const brands = ['Marlboro', 'Camel', 'American Spirit', 'Elf Bar', 'Juul']
-
-  for (const user of users) {
-    for (let i = 0; i < 10; i++) {
-      await prisma.log.create({
-        data: {
-          userId: user.id,
-          brand: brands[Math.floor(Math.random() * brands.length)],
-          trigger: triggers[Math.floor(Math.random() * triggers.length)],
-          note: Math.random() > 0.7 ? "Just another rough day" : null,
-          timestamp: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 7), // within last 7 days
-        },
-      })
+  if (breakRoomCommunity) {
+    const breakRoomMessages = [
+      { username: 'StressedOut', content: 'Just survived a 2-hour status meeting that could have been an email.' },
+      { username: 'Quitter99', content: 'The classic. Did you run straight to the break room?' },
+      { username: 'StressedOut', content: "Yep. Had to resist the urge. Logged a 'Stress' trigger in my profile instead!" },
+      { username: 'Quitter99', content: 'Nice! That\'s a win. I had my coffee break without a smoke today too.' },
+      { username: 'AshFox21', content: 'Congrats! The coffee break routine is the hardest one to break for me.' },
+    ];
+    for (const msg of breakRoomMessages) {
+      const user = users.find(u => u.anonymous_username === msg.username);
+      if (user) {
+        await prisma.message.create({
+          data: {
+            communityId: breakRoomCommunity.id,
+            userId: user.id,
+            content: msg.content,
+          }
+        });
+      }
     }
   }
 
-  console.log('Created logs')
+  if (quittingSquadCommunity) {
+    const quittingSquadMessages = [
+      { username: 'Quitter99', content: 'Just reached week 1 smoke-free! Cravings are getting weaker.' },
+      { username: 'VapeLord12', content: 'That\'s huge! Congrats. I\'m on day 3, hoping to get where you are.' },
+      { username: 'NightOwl99', content: 'Awesome work. Let\'s keep the streak alive.' },
+      { username: 'StressedOut', content: 'Inspirational! Whenever I get a craving, I\'ll look at your streak.' },
+    ];
+    for (const msg of quittingSquadMessages) {
+      const user = users.find(u => u.anonymous_username === msg.username);
+      if (user) {
+        await prisma.message.create({
+          data: {
+            communityId: quittingSquadCommunity.id,
+            userId: user.id,
+            content: msg.content,
+          }
+        });
+      }
+    }
+  }
+  console.log('Seeded community chats/conversations')
+
   console.log('Seeding complete!')
 }
 

@@ -18,8 +18,8 @@ interface Node {
 }
 
 const NODES: Node[] = [
-  { id: "1", label: "First Smoke", icon: Flame, status: "unlocked", x: 5, y: 8 },
-  { id: "2", label: "7 Day Streak", icon: Activity, status: "available", x: 5, y: 5 },
+  { id: "1", label: "First Smoke", icon: Flame, status: "available", x: 5, y: 8 },
+  { id: "2", label: "7 Day Streak", icon: Activity, status: "locked", x: 5, y: 5 },
   { id: "3", label: "Pattern Recognition", icon: Brain, status: "locked", x: 2, y: 3 },
   { id: "4", label: "Trigger Master", icon: Zap, status: "locked", x: 8, y: 3 },
   { id: "5", label: "Zen Mode", icon: Unlock, status: "locked", x: 5, y: 1 },
@@ -33,7 +33,20 @@ const CONNECTIONS = [
   { from: "4", to: "5" },
 ];
 
-export function DiscoveryTree() {
+interface DiscoveryTreeProps {
+  initialNodes?: { id: string, status: "locked" | "available" | "unlocked" }[];
+}
+
+export function DiscoveryTree({ initialNodes }: DiscoveryTreeProps) {
+  // Merge initial nodes with our static layout config
+  const nodesWithState = NODES.map(staticNode => {
+    const serverNode = initialNodes?.find(n => n.id === staticNode.id);
+    return {
+      ...staticNode,
+      status: serverNode ? serverNode.status : staticNode.status
+    };
+  });
+
   const triggerUnlock = (node: Node) => {
     if (node.status === "locked") {
       toast("Prerequisites not met. Keep logging to unlock.", { icon: "🔒" });
@@ -69,8 +82,8 @@ export function DiscoveryTree() {
       {/* Simple Connection Lines (using SVG) */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none">
         {CONNECTIONS.map((conn, idx) => {
-          const fromNode = NODES.find(n => n.id === conn.from);
-          const toNode = NODES.find(n => n.id === conn.to);
+          const fromNode = nodesWithState.find(n => n.id === conn.from);
+          const toNode = nodesWithState.find(n => n.id === conn.to);
           if (!fromNode || !toNode) return null;
           
           const isUnlocked = fromNode.status === "unlocked" && toNode.status === "unlocked";
@@ -93,7 +106,7 @@ export function DiscoveryTree() {
       </svg>
 
       {/* Nodes */}
-      {NODES.map((node) => {
+      {nodesWithState.map((node) => {
         const Icon = node.icon;
         const isUnlocked = node.status === "unlocked";
         const isAvailable = node.status === "available";

@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export async function login(formData: FormData) {
   const email = formData.get("email") as string;
@@ -11,10 +12,24 @@ export async function login(formData: FormData) {
 
   const supabase = await createClient();
   
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     return { error: error.message };
+  }
+
+  if (data.user) {
+    const deviceId = crypto.randomUUID();
+    try {
+      await prisma.user.update({
+        where: { id: data.user.id },
+        data: { current_device_id: deviceId }
+      });
+      const cookieStore = await cookies();
+      cookieStore.set("smory_device_id", deviceId, { httpOnly: true, secure: true, sameSite: 'lax' });
+    } catch (err) {
+      console.error("Failed to set device ID during login", err);
+    }
   }
 
   revalidatePath("/", "layout");
@@ -83,6 +98,18 @@ export async function verifyOTP(formData: FormData) {
         console.error("Failed to create profile:", err);
       }
     }
+
+    const deviceId = crypto.randomUUID();
+    try {
+      await prisma.user.update({
+        where: { id: data.user.id },
+        data: { current_device_id: deviceId }
+      });
+      const cookieStore = await cookies();
+      cookieStore.set("smory_device_id", deviceId, { httpOnly: true, secure: true, sameSite: 'lax' });
+    } catch (err) {
+      console.error("Failed to set device ID during OTP verification", err);
+    }
   }
 
   revalidatePath("/", "layout");
@@ -92,6 +119,10 @@ export async function verifyOTP(formData: FormData) {
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  
+  const cookieStore = await cookies();
+  cookieStore.delete("smory_device_id");
+  
   redirect("/auth");
 }
 
@@ -122,6 +153,44 @@ export async function getCurrentUser() {
       // If creation fails, we must force logout so they aren't trapped in a ghost state
       await supabase.auth.signOut();
       return null;
+    }
+  }
+
+  // Session Concurrency Check
+  const cookieStore = await cookies();
+  const currentCookieId = cookieStore.get("smory_device_id")?.value;
+
+  if (dbUser.current_device_id && dbUser.current_device_id !== currentCookieId) {
+    console.log("Session mismatch detected. Logging out.");
+    await supabase.auth.signOut();
+    cookieStore.delete("smory_device_id");
+    redirect("/auth");
+  }
+
+  // Track/Update daily login active streak
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  
+  if (dbUser.last_login_date !== todayStr) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+    
+    let newStreak = 1;
+    if (dbUser.last_login_date === yesterdayStr) {
+      newStreak = dbUser.login_streak + 1;
+    }
+    
+    try {
+      dbUser = await prisma.user.update({
+        where: { id: dbUser.id },
+        data: {
+          last_login_date: todayStr,
+          login_streak: newStreak
+        }
+      });
+    } catch (err) {
+      console.error("Failed to update user login streak:", err);
     }
   }
 

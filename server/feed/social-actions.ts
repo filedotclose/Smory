@@ -77,6 +77,7 @@ export async function createReply(postId: string, content: string) {
     if (!user) return { error: "Not authenticated" };
 
     if (!content.trim()) return { error: "Reply cannot be empty" };
+    if (content.length > 500) return { error: "Reply cannot exceed 500 characters" };
 
     const reply = await prisma.reply.create({
       data: {

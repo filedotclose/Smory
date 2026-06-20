@@ -98,7 +98,7 @@ export function CommunityChat({ community, initialMessages, currentUserId, supab
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] md:h-[600px] border-[4px] border-ink-black shadow-[8px_8px_0px_0px_rgba(11,11,15,1)] bg-paper-white relative">
+    <div className="flex flex-col h-[calc(100dvh-80px)] md:h-[600px] border-[4px] border-ink-black shadow-[8px_8px_0px_0px_rgba(11,11,15,1)] bg-paper-white relative">
       {/* Header */}
       <div className="p-4 border-b-[3px] border-ink-black flex items-center gap-3 bg-marlboro-red text-paper-white z-10">
         <Link href="/communities" className="p-1 hover:bg-ink-black/20 transition-colors">
@@ -154,7 +154,7 @@ export function CommunityChat({ community, initialMessages, currentUserId, supab
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSubmit} className="p-4 border-t-[3px] border-ink-black bg-paper-white flex gap-2 z-10">
+      <form onSubmit={handleSubmit} className="p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] sm:pb-4 border-t-[3px] border-ink-black bg-paper-white flex gap-2 z-10">
         <input
           type="text"
           value={content}

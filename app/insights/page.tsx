@@ -2,12 +2,22 @@ import { DiscoveryTree } from "@/components/insights/DiscoveryTree";
 import { InsightCard } from "@/components/insights/InsightCard";
 import { PixelParticleBackground } from "@/components/ui/pixel/PixelParticleBackground";
 import { Clock, TrendingDown, Target, Zap } from "lucide-react";
+import { getAnalytics } from "@/server/log/actions";
 
 export const metadata = {
   title: "Insights & Discovery | Smory",
 };
 
-export default function InsightsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function InsightsPage() {
+  const analytics = await getAnalytics();
+  
+  const dailyAvg = analytics.empty ? "0.0" : analytics.dailyAvg;
+  const peakTime = analytics.empty ? "--" : analytics.peakTime;
+  const topTrigger = analytics.empty ? "--" : analytics.topTrigger;
+  const streak = analytics.currentStreak || 0;
+
   return (
     <div className="min-h-screen relative p-4 sm:p-6 lg:p-8 bg-checkered">
       <PixelParticleBackground type="sparks" density={40} className="fixed inset-0 opacity-20 pointer-events-none z-0" />
@@ -21,10 +31,10 @@ export default function InsightsPage() {
         </header>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <InsightCard title="Daily Avg" value="4.2" label="-1.1 this week" icon={<TrendingDown />} trend="down" />
-          <InsightCard title="Peak Craving" value="2:00 PM" label="Post-lunch habit" icon={<Clock />} />
-          <InsightCard title="Main Trigger" value="Stress" label="Accounted for 60%" icon={<Zap />} />
-          <InsightCard title="Current Streak" value="3 Days" label="Personal best: 14" icon={<Target />} trend="up" />
+          <InsightCard title="Daily Avg" value={dailyAvg as string} label={analytics.empty ? "No data yet" : "Logs per day"} icon={<TrendingDown />} />
+          <InsightCard title="Peak Craving" value={peakTime as string} label={analytics.empty ? "No data yet" : "Most frequent hour"} icon={<Clock />} />
+          <InsightCard title="Main Trigger" value={topTrigger as string} label={analytics.empty ? "No data yet" : "Top identified cause"} icon={<Zap />} />
+          <InsightCard title="Current Streak" value={`${streak} Days`} label={analytics.empty ? "No data yet" : "Keep it up"} icon={<Target />} />
         </div>
 
         <div className="mb-6">
@@ -32,7 +42,7 @@ export default function InsightsPage() {
             Discovery Tree
           </h2>
           <p className="text-ash-gray text-xs font-bold uppercase tracking-widest mb-4">Unlock behavioral nodes to understand your subconscious loops</p>
-          <DiscoveryTree />
+          <DiscoveryTree initialNodes={analytics.nodes as any} />
         </div>
       </div>
     </div>

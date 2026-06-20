@@ -88,6 +88,7 @@ export async function sendMessage(communityId: string, content: string) {
     if (!user) return { error: "Not authenticated" };
 
     if (!content.trim()) return { error: "Message cannot be empty" };
+    if (content.length > 500) return { error: "Message cannot exceed 500 characters" };
 
     // Verify membership
     const membership = await prisma.communityMember.findUnique({

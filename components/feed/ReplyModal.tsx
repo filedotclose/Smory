@@ -85,7 +85,7 @@ export function ReplyModal({ isOpen, onClose, postId, currentUserId }: ReplyModa
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative z-10 w-full max-w-lg h-[80vh] sm:h-[600px] pointer-events-auto flex flex-col bg-paper-white sm:border-[4px] sm:border-ink-black sm:shadow-[8px_8px_0px_0px_rgba(11,11,15,1)]"
+            className="relative z-10 w-full max-w-lg h-full max-h-[85dvh] sm:h-[600px] sm:max-h-none pointer-events-auto flex flex-col bg-paper-white sm:border-[4px] sm:border-ink-black sm:shadow-[8px_8px_0px_0px_rgba(11,11,15,1)]"
           >
             {/* Header */}
             <div className="shrink-0 flex items-center justify-between p-4 border-b-[3px] border-ink-black/10 bg-paper-white z-20">
@@ -101,7 +101,14 @@ export function ReplyModal({ isOpen, onClose, postId, currentUserId }: ReplyModa
             {/* Replies List */}
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-checkered relative">
               {isFetching ? (
-                <div className="text-center text-ash-gray font-bold uppercase text-xs p-4">Loading replies...</div>
+                <div className="flex flex-col gap-4 animate-pulse p-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="flex gap-3 items-start">
+                      <div className="w-8 h-8 shrink-0 bg-ink-black/10 border-[2px] border-ink-black/20 shadow-[2px_2px_0px_0px_rgba(11,11,15,0.1)]" />
+                      <div className="flex-1 bg-ink-black/5 border-[2px] border-ink-black/20 p-3 h-16 shadow-[2px_2px_0px_0px_rgba(11,11,15,0.1)]" />
+                    </div>
+                  ))}
+                </div>
               ) : replies.length === 0 ? (
                 <div className="text-center text-ash-gray font-bold uppercase text-xs p-8 bg-paper-white border-[2px] border-ink-black/20">
                   No replies yet. Be the first to add to the story.
@@ -137,7 +144,7 @@ export function ReplyModal({ isOpen, onClose, postId, currentUserId }: ReplyModa
             </div>
 
             {/* Input Bar */}
-            <form onSubmit={handleSubmit} className="shrink-0 p-4 pb-6 sm:pb-4 border-t-[3px] border-ink-black/10 bg-paper-white flex gap-2 z-20">
+            <form onSubmit={handleSubmit} className="shrink-0 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] sm:pb-4 border-t-[3px] border-ink-black/10 bg-paper-white flex gap-2 z-20">
               <input
                 type="text"
                 value={content}

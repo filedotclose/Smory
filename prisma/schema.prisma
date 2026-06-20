@@ -13,6 +13,9 @@ model User {
   anonymous_username String     @unique
   display_name       String?    // Optional, shown to friends
   avatar_species     String     @default("Fox") // Fox, Wolf, Cat, Dragon, Owl, Rabbit
+  last_login_date    String?
+  login_streak       Int        @default(0)
+  current_device_id  String?
   created_at         DateTime   @default(now())
   updated_at         DateTime   @updatedAt
 
@@ -153,6 +156,7 @@ model Log {
   userId     String
   brand      String
   trigger    String
+  intensity  Int      @default(3)
   note       String?
   photo_url  String?
   timestamp  DateTime @default(now())

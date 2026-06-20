@@ -30,55 +30,8 @@ export async function getProfileStats() {
   });
   const badgesCount = uniqueBrands.length;
 
-  // 3. Calculate Streak
-  const logs = await prisma.log.findMany({
-    where: { userId },
-    select: { timestamp: true },
-    orderBy: { timestamp: "desc" }
-  });
-
-  let streak = 0;
-  if (logs.length > 0) {
-    const dates = logs.map(l => {
-      const d = new Date(l.timestamp);
-      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-    });
-    
-    // Deduplicate dates
-    const uniqueDates = Array.from(new Set(dates));
-    
-    // Helper to check if two string dates are consecutive days
-    const isConsecutive = (d1Str: string, d2Str: string) => {
-      const d1 = new Date(d1Str);
-      const d2 = new Date(d2Str);
-      const diffTime = Math.abs(d2.getTime() - d1.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays === 1;
-    };
-
-    const todayStr = (() => {
-      const d = new Date();
-      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-    })();
-
-    const yesterdayStr = (() => {
-      const d = new Date();
-      d.setDate(d.getDate() - 1);
-      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-    })();
-
-    // Check if they logged today or yesterday to continue streak
-    if (uniqueDates[0] === todayStr || uniqueDates[0] === yesterdayStr) {
-      streak = 1;
-      for (let i = 0; i < uniqueDates.length - 1; i++) {
-        if (isConsecutive(uniqueDates[i], uniqueDates[i + 1])) {
-          streak++;
-        } else {
-          break;
-        }
-      }
-    }
-  }
+  // 3. Get streak from login_streak
+  const streak = user.login_streak;
 
   return {
     logsCount,
