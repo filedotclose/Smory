@@ -57,7 +57,45 @@ export async function signup(formData: FormData) {
     return { error: error.message };
   }
 
-  // We don't create profile yet, we wait for OTP verification.
+  // If email confirmation is disabled in Supabase, a session is returned immediately.
+  if (data.session) {
+    const existingUser = await prisma.user.findUnique({ where: { id: data.user!.id } });
+    
+    if (!existingUser) {
+      const speciesList = ['Fox', 'Wolf', 'Cat', 'Dragon', 'Owl', 'Rabbit'];
+      const randomSpecies = speciesList[Math.floor(Math.random() * speciesList.length)];
+      const randomAlias = `Smoker${Math.floor(Math.random() * 100000)}`;
+
+      try {
+        await prisma.user.create({
+          data: {
+            id: data.user!.id,
+            anonymous_username: randomAlias,
+            avatar_species: randomSpecies,
+          }
+        });
+      } catch (err) {
+        console.error("Failed to create profile:", err);
+      }
+    }
+
+    const deviceId = crypto.randomUUID();
+    try {
+      await prisma.user.update({
+        where: { id: data.user!.id },
+        data: { current_device_id: deviceId }
+      });
+      const cookieStore = await cookies();
+      cookieStore.set("smory_device_id", deviceId, { httpOnly: true, secure: true, sameSite: 'lax' });
+    } catch (err) {
+      console.error("Failed to set device ID during auto-login", err);
+    }
+    
+    revalidatePath("/", "layout");
+    return { success: true, requireOtp: false };
+  }
+
+  // Otherwise, we wait for email verification.
   return { success: true, requireOtp: true, type: 'email', identifier: email };
 }
 

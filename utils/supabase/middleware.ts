@@ -40,8 +40,9 @@ export const updateSession = async (request: NextRequest) => {
   const isWelcomePage = request.nextUrl.pathname.startsWith('/welcome');
   const isTermsPage = request.nextUrl.pathname.startsWith('/terms');
   const isPrivacyPage = request.nextUrl.pathname.startsWith('/privacy');
+  const isThankYouPage = request.nextUrl.pathname.startsWith('/thankyou');
 
-  if (!user && !isAuthPage && !isWelcomePage && !isTermsPage && !isPrivacyPage) {
+  if (!user && !isAuthPage && !isWelcomePage && !isTermsPage && !isPrivacyPage && !isThankYouPage) {
     const url = request.nextUrl.clone();
     url.pathname = '/welcome';
     return NextResponse.redirect(url);

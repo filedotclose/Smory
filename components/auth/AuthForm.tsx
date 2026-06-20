@@ -39,7 +39,10 @@ export function AuthForm() {
         setIdentifier(res.identifier as string);
         setType("email");
         setStep("otp");
-        toast.success(`OTP sent to your email`);
+        toast.success(`Verification link sent to your email`);
+      } else {
+        toast.success("Account created! Welcome to Smory.");
+        router.push("/");
       }
     }
   };

@@ -13,11 +13,12 @@ model User {
   anonymous_username String     @unique
   display_name       String?    // Optional, shown to friends
   avatar_species     String     @default("Fox") // Fox, Wolf, Cat, Dragon, Owl, Rabbit
-  last_login_date    String?
-  login_streak       Int        @default(0)
-  current_device_id  String?
-  created_at         DateTime   @default(now())
-  updated_at         DateTime   @updatedAt
+  last_login_date          String?
+  login_streak             Int        @default(0)
+  current_device_id        String?
+  has_completed_onboarding Boolean    @default(false)
+  created_at               DateTime   @default(now())
+  updated_at               DateTime   @updatedAt
 
   logs               Log[]
   posts              Post[]

@@ -48,11 +48,15 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { getCurrentUser } = await import("@/server/auth/actions");
+  const user = await getCurrentUser();
+  const hasCompletedOnboarding = user?.has_completed_onboarding ?? true;
+
   return (
     <html
       lang="en"
@@ -63,7 +67,7 @@ export default function RootLayout({
         <ServiceWorkerRegistrar />
         <InstallPwaModal />
         <Providers>
-          <AuthenticatedLayoutWrapper>
+          <AuthenticatedLayoutWrapper hasCompletedOnboarding={hasCompletedOnboarding}>
             {children}
           </AuthenticatedLayoutWrapper>
           <Toaster theme="dark" position="bottom-right" toastOptions={{ style: { marginBottom: 'calc(env(safe-area-inset-bottom) + 80px)' } }} />

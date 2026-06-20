@@ -28,6 +28,7 @@ export function Navigation() {
             if (item.isPrimary) {
               return (
                 <Link
+                  id={`tour-nav-${item.label.toLowerCase()}`}
                   key={item.href}
                   href={item.href}
                   className="flex items-center justify-center -mt-6 rounded-full bg-marlboro-red text-paper-white p-4 shadow-[0px_4px_0px_0px_rgba(11,11,15,1)] border-[3px] border-ink-black active:translate-y-1 active:shadow-none transition-all"
@@ -39,6 +40,7 @@ export function Navigation() {
 
             return (
               <Link
+                id={`tour-nav-${item.label.toLowerCase()}`}
                 key={item.href}
                 href={item.href}
                 className={cn(
@@ -67,6 +69,7 @@ export function Navigation() {
 
             return (
               <Link
+                id={`tour-nav-desktop-${item.label.toLowerCase()}`}
                 key={item.href}
                 href={item.href}
                 className={cn(

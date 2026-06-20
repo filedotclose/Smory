@@ -83,3 +83,20 @@ export async function updateProfileSettings(formData: FormData) {
     return { error: error.message || "Failed to update profile settings" };
   }
 }
+
+export async function completeOnboarding() {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return { error: "Not authenticated" };
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { has_completed_onboarding: true }
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Complete onboarding error:", error);
+    return { error: error.message || "Failed to complete onboarding" };
+  }
+}
