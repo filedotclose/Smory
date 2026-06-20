@@ -8,6 +8,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { updateProfileSettings } from "@/server/profile/actions";
 import { PushNotificationSettings } from "@/components/profile/PushNotificationSettings";
+import { logout } from "@/server/auth/actions";
 
 interface SettingsFormProps {
   initialUser: {
@@ -179,6 +180,24 @@ export function SettingsForm({ initialUser }: SettingsFormProps) {
           Notification Configuration
         </h2>
         <PushNotificationSettings />
+      </div>
+
+      {/* Danger Zone Separator */}
+      <div className="my-10 border-t-[3px] border-ink-black/15" />
+
+      {/* Danger Zone */}
+      <div className="flex flex-col gap-4">
+        <h2 className="text-xs font-black uppercase tracking-widest text-marlboro-red px-1">
+          Danger Zone
+        </h2>
+        <form action={logout}>
+          <button 
+            type="submit"
+            className="w-full bg-paper-white text-marlboro-red p-4 border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] hover:shadow-[6px_6px_0px_0px_rgba(225,29,72,1)] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer font-black uppercase tracking-widest text-sm"
+          >
+            Logout From This Device
+          </button>
+        </form>
       </div>
     </div>
   );

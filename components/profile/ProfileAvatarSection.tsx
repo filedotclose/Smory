@@ -52,7 +52,7 @@ export function ProfileAvatarSection({ username, displayName, species, joinDate,
         <div className="absolute top-0 left-0 right-0 h-4 bg-marlboro-red border-b-[3px] border-ink-black" />
         
         {/* Fun Stamps/Stickers */}
-        <div className="absolute right-4 top-8 -rotate-12 bg-filter-gold text-ink-black text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] select-none">
+        <div className="absolute right-8 top-16 -rotate-12 bg-filter-gold text-ink-black text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] select-none">
           OFFICIAL ID
         </div>
         <div className="absolute right-28 top-7 rotate-6 text-2xl opacity-10 select-none pointer-events-none">🚬</div>

@@ -5,7 +5,8 @@ import { getCurrentUser, logout } from "@/server/auth/actions";
 import { getProfileStats } from "@/server/profile/actions";
 import { getFriends, getPendingRequests } from "@/server/friends/actions";
 import { redirect } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { Settings } from "lucide-react";
+import Link from "next/link";
 import { FriendsSection } from "@/components/profile/FriendsSection";
 
 export const metadata = {
@@ -51,15 +52,13 @@ export default async function ProfilePage() {
               Your Case
             </h1>
           </div>
-          <form action={logout}>
-            <button 
-              type="submit"
-              className="bg-paper-white text-ink-black hover:text-marlboro-red p-3 border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] active:translate-y-1 active:shadow-none transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <LogOut size={18} strokeWidth={2.5} />
-              <span className="text-xs font-bold uppercase tracking-widest hidden sm:inline">Logout</span>
-            </button>
-          </form>
+          <Link 
+            href="/settings"
+            className="bg-paper-white text-ink-black hover:text-marlboro-red p-3 border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] active:translate-y-1 active:shadow-none transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <Settings size={18} strokeWidth={2.5} />
+            <span className="text-xs font-bold uppercase tracking-widest hidden sm:inline">Settings</span>
+          </Link>
         </header>
 
         {/* Bento Box Main Section */}

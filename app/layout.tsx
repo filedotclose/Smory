@@ -66,7 +66,7 @@ export default function RootLayout({
           <AuthenticatedLayoutWrapper>
             {children}
           </AuthenticatedLayoutWrapper>
-          <Toaster theme="dark" position="bottom-center" toastOptions={{ style: { marginBottom: 'calc(env(safe-area-inset-bottom) + 80px)' } }} />
+          <Toaster theme="dark" position="bottom-right" toastOptions={{ style: { marginBottom: 'calc(env(safe-area-inset-bottom) + 80px)' } }} />
         </Providers>
       </body>
     </html>
