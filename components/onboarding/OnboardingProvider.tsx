@@ -48,10 +48,14 @@ export function OnboardingProvider({ hasCompletedOnboarding, children }: Props) 
     ]);
 
     if (!hasCompletedOnboarding) {
-      const timer = setTimeout(() => {
-        setRun(true);
-      }, 1000);
-      return () => clearTimeout(timer);
+      // Client-side fallback to absolutely guarantee it only runs once per browser
+      const hasRunLocally = localStorage.getItem("smory_tour_completed");
+      if (!hasRunLocally) {
+        const timer = setTimeout(() => {
+          setRun(true);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
     }
   }, [hasCompletedOnboarding]);
 
@@ -61,6 +65,7 @@ export function OnboardingProvider({ hasCompletedOnboarding, children }: Props) 
 
     if (finishedStatuses.includes(status)) {
       setRun(false);
+      localStorage.setItem("smory_tour_completed", "true");
       await completeOnboarding();
     }
   };
