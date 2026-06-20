@@ -52,6 +52,7 @@ export function OnboardingProvider({ hasCompletedOnboarding, children }: Props) 
       const hasRunLocally = localStorage.getItem("smory_tour_completed");
       if (!hasRunLocally) {
         const timer = setTimeout(() => {
+          localStorage.setItem("smory_tour_completed", "true");
           setRun(true);
         }, 1000);
         return () => clearTimeout(timer);
@@ -60,10 +61,11 @@ export function OnboardingProvider({ hasCompletedOnboarding, children }: Props) 
   }, [hasCompletedOnboarding]);
 
   const handleJoyrideCallback = async (data: any) => {
-    const { status } = data;
+    const { status, action } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
-    if (finishedStatuses.includes(status)) {
+    // If the tour is finished, skipped, or simply closed (clicking outside/esc key)
+    if (finishedStatuses.includes(status) || action === "close") {
       setRun(false);
       localStorage.setItem("smory_tour_completed", "true");
       await completeOnboarding();
