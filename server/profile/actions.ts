@@ -94,6 +94,7 @@ export async function completeOnboarding() {
       data: { has_completed_onboarding: true }
     });
 
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error: any) {
     console.error("Complete onboarding error:", error);
