@@ -47,46 +47,53 @@ export function NotificationCard({ notification }: { notification: NotificationP
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="relative"
+      className="relative mb-2"
     >
-      <PixelCard className={`p-4 flex flex-col gap-3 transition-colors ${notification.isRead ? 'bg-paper-white' : 'bg-filter-gold/10'}`}>
+      <div className={`relative p-5 border-[3px] border-ink-black bg-paper-white flex flex-col gap-3 transition-all ${!notification.isRead ? 'shadow-[6px_6px_0px_0px_rgba(225,29,72,1)] translate-y-[-2px] translate-x-[-2px]' : 'shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] hover:translate-y-[-1px] hover:translate-x-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(11,11,15,1)]'}`}>
+        
+        {/* Brutalist NEW Badge */}
         {!notification.isRead && (
-          <div className="absolute -top-2 -right-2 w-3 h-3 bg-marlboro-red border-[2px] border-ink-black animate-pulse z-10" />
+          <div className="absolute -top-3 -right-3 bg-marlboro-red text-paper-white text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] rotate-3 z-10">
+            NEW
+          </div>
         )}
         
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-paper-white border-[3px] border-ink-black flex items-center justify-center text-lg shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] flex-shrink-0">
-              {getAvatarEmoji(notification.actor.species)}
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-ink-black uppercase tracking-tight leading-tight">
+        <div className="flex items-start gap-4">
+          {/* Avatar Box */}
+          <div className="w-12 h-12 bg-paper-white border-[3px] border-ink-black flex items-center justify-center text-2xl shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] flex-shrink-0">
+            {getAvatarEmoji(notification.actor.species)}
+          </div>
+          
+          <div className="flex-1 pt-0.5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
+              <span className="font-black text-ink-black uppercase tracking-tight text-base leading-none">
                 {notification.actor.username}
               </span>
-              <span className="text-[10px] text-ash-gray uppercase tracking-widest font-bold">
+              <span className="text-[9px] text-ash-gray font-bold uppercase tracking-widest shrink-0">
+                {formatDistanceToNow(notification.createdAt)} AGO
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-1.5 mt-2">
+              <Icon size={14} style={{ color }} strokeWidth={3} />
+              <span className="text-[11px] font-extrabold uppercase tracking-wider" style={{ color: notification.isRead ? '#828282' : '#0B0B0F' }}>
                 {action}
               </span>
             </div>
           </div>
-          
-          <div 
-            className="p-2 border-[2px] border-ink-black bg-paper-white shadow-[2px_2px_0px_0px_rgba(11,11,15,1)]"
-            style={{ color }}
-          >
-            <Icon size={16} strokeWidth={2.5} />
+        </div>
+
+        {/* Quote Block - Only show if content exists */}
+        {notification.content && (
+          <div className="mt-2 bg-paper-white p-3 border-[2px] border-ink-black border-dashed relative">
+            {/* Small decorative pin */}
+            <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-1 bg-ash-gray/30" />
+            <p className="text-ink-black text-sm font-medium italic">
+              "{notification.content}"
+            </p>
           </div>
-        </div>
-
-        <div className="bg-ink-black/5 p-3 border-[2px] border-ink-black/20">
-          <p className="text-ink-black text-sm font-medium italic line-clamp-2">
-            &quot;{notification.content}&quot;
-          </p>
-        </div>
-
-        <div className="text-[9px] text-ash-gray uppercase tracking-widest font-bold text-right mt-1">
-          {formatDistanceToNow(notification.createdAt, { addSuffix: true })}
-        </div>
-      </PixelCard>
+        )}
+      </div>
     </motion.div>
   );
 }

@@ -33,17 +33,17 @@ export async function createNotification(
     let url = "/notifications";
 
     if (type === "PUFF") {
-      title = "🔥 You got a Puff";
-      body = `${actor.anonymous_username} puffed your post.`;
+      title = "🔥 Log Puffed!";
+      body = `${actor.anonymous_username} is hyping up your recent post.`;
     } else if (type === "INSIGHT") {
-      title = "💡 Insight Received";
-      body = `${actor.anonymous_username} found your post insightful.`;
+      title = "✨ Big Brain Moment";
+      body = `${actor.anonymous_username} found your log insightful!`;
     } else if (type === "REPLY") {
-      title = "💬 New Reply";
-      body = `${actor.anonymous_username} replied: "${content?.substring(0, 30) || ''}..."`;
+      title = "💬 Incoming Transmission";
+      body = `${actor.anonymous_username} replied: "${content?.substring(0, 40) || ''}..."`;
     } else if (type === "FRIEND_REQUEST") {
-      title = "👤 Friend Request";
-      body = `${actor.anonymous_username} wants to join your circle.`;
+      title = "🎫 New Challenger Approaching";
+      body = `${actor.anonymous_username} wants to join your crew.`;
       url = "/profile";
     }
 

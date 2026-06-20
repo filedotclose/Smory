@@ -40,7 +40,7 @@ export function CommunityCard({ id, name, description, memberCount, themeColor, 
   };
 
   return (
-    <Link href={`/communities/${id}`} className="block h-full">
+    <div className="block h-full">
       <PixelCard variant="interactive" className="h-full flex flex-col justify-between group overflow-hidden">
         {/* Theme banner / pixel pattern */}
         <div 
@@ -66,21 +66,31 @@ export function CommunityCard({ id, name, description, memberCount, themeColor, 
             <span>{localMemberCount.toLocaleString()}</span>
           </div>
           
-          <button 
-            onClick={handleJoin}
-            disabled={loading}
-            className={cn(
-              "text-xs font-bold uppercase tracking-widest px-3 py-1.5 transition-colors border-[2px]",
-              joined 
-                ? "bg-ink-black text-paper-white border-ink-black hover:bg-marlboro-red hover:border-marlboro-red"
-                : "border-transparent hover:border-ink-black"
+          <div className="flex gap-2">
+            {joined && (
+              <Link 
+                href={`/communities/${id}`}
+                className="bg-filter-gold text-ink-black text-xs font-bold uppercase tracking-widest px-3 py-1.5 border-[2px] border-ink-black shadow-[2px_2px_0px_0px_rgba(11,11,15,1)] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(11,11,15,1)] transition-all"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Open
+              </Link>
             )}
-            style={{ color: joined ? undefined : themeColor }}
-          >
-            {loading ? "..." : joined ? "Leave" : "Join"}
-          </button>
+            <button 
+              onClick={handleJoin}
+              disabled={loading}
+              className={cn(
+                "text-xs font-bold uppercase tracking-widest px-3 py-1.5 transition-colors border-[2px]",
+                joined 
+                  ? "bg-paper-white text-ink-black border-ink-black hover:bg-marlboro-red hover:text-paper-white hover:border-marlboro-red"
+                  : "bg-ink-black text-paper-white border-ink-black hover:bg-marlboro-red hover:border-marlboro-red"
+              )}
+            >
+              {loading ? "..." : joined ? "Leave" : "Join"}
+            </button>
+          </div>
         </div>
       </PixelCard>
-    </Link>
+    </div>
   );
 }

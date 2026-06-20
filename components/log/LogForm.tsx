@@ -39,6 +39,7 @@ export function LogForm() {
   
   // Step 1 State
   const [brand, setBrand] = useState<string | null>(null);
+  const [customBrand, setCustomBrand] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -74,8 +75,10 @@ export function LogForm() {
   const handleSubmit = async () => {
     if (!brand || !trigger) return;
     
+    const finalBrand = brand === "Other" && customBrand.trim() ? customBrand.trim() : brand;
+    
     setIsSubmitting(true);
-    const result = await createLog(brand, trigger, intensity, photo || undefined);
+    const result = await createLog(finalBrand, trigger, intensity, photo || undefined);
     setIsSubmitting(false);
 
     if (result.error) {
@@ -84,13 +87,14 @@ export function LogForm() {
     }
 
     triggerPixelBurst();
-    toast.success(`Log recorded: ${brand}. 🔥`, {
+    toast.success(`Log recorded: ${finalBrand}. 🔥`, {
       className: "border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] rounded-none font-bold text-ink-black"
     });
     
     setTimeout(() => {
       setStep(1);
       setBrand(null);
+      setCustomBrand("");
       setPhoto(null);
       setTrigger(null);
       setIntensity(3);
@@ -130,6 +134,24 @@ export function LogForm() {
                   </button>
                 ))}
               </div>
+              <AnimatePresence>
+                {brand === "Other" && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden mt-1"
+                  >
+                    <input
+                      type="text"
+                      placeholder="Type brand name..."
+                      value={customBrand}
+                      onChange={(e) => setCustomBrand(e.target.value)}
+                      className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black font-bold uppercase tracking-widest text-[10px] focus:outline-none focus:border-marlboro-red focus:shadow-[2px_2px_0px_0px_rgba(225,29,72,0.2)] transition-all"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="flex flex-col gap-2 mt-2">
@@ -160,10 +182,10 @@ export function LogForm() {
             </div>
 
             <button
-              disabled={!brand}
+              disabled={!brand || (brand === "Other" && !customBrand.trim())}
               onClick={handleNext}
               className={`w-full py-4 font-bold uppercase tracking-widest transition-all border-[3px] border-ink-black shadow-[4px_4px_0px_0px_rgba(11,11,15,1)] mt-4 ${
-                brand 
+                brand && (brand !== "Other" || customBrand.trim())
                   ? "bg-filter-gold text-ink-black hover:bg-filter-gold/90 active:translate-y-1 active:shadow-none" 
                   : "bg-paper-white text-ash-gray border-dashed cursor-not-allowed shadow-none"
               }`}
