@@ -3,6 +3,7 @@ import { InsightCard } from "@/components/insights/InsightCard";
 import { PixelParticleBackground } from "@/components/ui/pixel/PixelParticleBackground";
 import { Clock, TrendingDown, Target, Zap } from "lucide-react";
 import { getAnalytics } from "@/server/log/actions";
+import { PeakCravingTime } from "@/components/insights/PeakCravingTime";
 
 export const metadata = {
   title: "Insights & Discovery | Smory",
@@ -14,7 +15,6 @@ export default async function InsightsPage() {
   const analytics = await getAnalytics();
   
   const dailyAvg = analytics.empty ? "0.0" : analytics.dailyAvg;
-  const peakTime = analytics.empty ? "--" : analytics.peakTime;
   const topTrigger = analytics.empty ? "--" : analytics.topTrigger;
   const streak = analytics.currentStreak || 0;
 
@@ -32,7 +32,7 @@ export default async function InsightsPage() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           <InsightCard title="Daily Avg" value={dailyAvg as string} label={analytics.empty ? "No data yet" : "Logs per day"} icon={<TrendingDown />} />
-          <InsightCard title="Peak Craving" value={peakTime as string} label={analytics.empty ? "No data yet" : "Most frequent hour"} icon={<Clock />} />
+          <PeakCravingTime timestamps={analytics.empty ? [] : (analytics.timestamps as string[])} />
           <InsightCard title="Main Trigger" value={topTrigger as string} label={analytics.empty ? "No data yet" : "Top identified cause"} icon={<Zap />} />
           <InsightCard title="Current Streak" value={`${streak} Days`} label={analytics.empty ? "No data yet" : "Keep it up"} icon={<Target />} />
         </div>

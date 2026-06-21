@@ -69,12 +69,6 @@ export async function getAnalytics() {
     const daysSinceFirst = Math.max(1, Math.ceil((Date.now() - firstLog.getTime()) / (1000 * 60 * 60 * 24)));
     const dailyAvg = (logs.length / daysSinceFirst).toFixed(1);
 
-    // Peak craving
-    const hourCounts = Array(24).fill(0);
-    logs.forEach(l => hourCounts[l.timestamp.getHours()]++);
-    const peakHour = hourCounts.indexOf(Math.max(...hourCounts));
-    const peakTime = `${peakHour === 0 ? 12 : peakHour > 12 ? peakHour - 12 : peakHour}:00 ${peakHour >= 12 ? 'PM' : 'AM'}`;
-
     // Top trigger
     const triggerCounts = logs.reduce((acc, l) => {
       acc[l.trigger] = (acc[l.trigger] || 0) + 1;
@@ -110,7 +104,7 @@ export async function getAnalytics() {
     return {
       empty: false,
       dailyAvg,
-      peakTime,
+      timestamps: logs.map(l => l.timestamp.toISOString()), // Return raw timestamps for client timezone calculation
       topTrigger,
       currentStreak: user.login_streak,
       nodes

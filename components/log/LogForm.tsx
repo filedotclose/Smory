@@ -78,7 +78,8 @@ export function LogForm() {
     const finalBrand = brand === "Other" && customBrand.trim() ? customBrand.trim() : brand;
     
     setIsSubmitting(true);
-    const result = await createLog(finalBrand, trigger, intensity, photo || undefined);
+    // As per new spec, photos are just a local UI ritual and are not saved to the DB.
+    const result = await createLog(finalBrand, trigger, intensity, undefined);
     setIsSubmitting(false);
 
     if (result.error) {
