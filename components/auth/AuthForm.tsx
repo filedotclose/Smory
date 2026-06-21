@@ -31,6 +31,15 @@ export function AuthForm() {
         router.push("/");
       }
     } else {
+      const password = formData.get("password") as string;
+      const confirmPassword = formData.get("confirmPassword") as string;
+      
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match!");
+        setStep("credentials");
+        return;
+      }
+
       const res = await signup(formData);
       if (res?.error) {
         toast.error(res.error);
@@ -141,6 +150,20 @@ export function AuthForm() {
                   </p>
                 )}
               </div>
+              {mode === "signup" && (
+                <div>
+                  <label className="text-xs text-ash-gray uppercase font-bold tracking-wider mb-1 block">
+                    Confirm Password
+                  </label>
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    className="w-full bg-paper-white border-[3px] border-ink-black p-3 text-ink-black focus:outline-none focus:border-marlboro-red focus:shadow-[4px_4px_0px_0px_rgba(225,29,72,0.2)] transition-all font-medium"
+                  />
+                </div>
+              )}
             </div>
 
             <motion.button
