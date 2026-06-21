@@ -1,11 +1,11 @@
 "use client";
 
-import { Flame, Sparkles, MessageSquare, AlertCircle } from "lucide-react";
+import { Flame, Sparkles, MessageSquare, AlertCircle, Users } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { PixelCard } from "@/components/ui/pixel/PixelCard";
 import { motion } from "framer-motion";
 
-export type NotificationType = "puff" | "insight" | "reply" | "system";
+export type NotificationType = "puff" | "insight" | "reply" | "system" | "friend_request";
 
 export interface NotificationProps {
   id: string;
@@ -35,8 +35,12 @@ export function NotificationCard({ notification }: { notification: NotificationP
         return { icon: Sparkles, color: "#EAB308", action: "found your log insightful" }; // Filter Gold
       case "reply":
         return { icon: MessageSquare, color: "#0B0B0F", action: "replied to your post" }; // Ink Black
+      case "friend_request":
+        return { icon: Users, color: "#3b82f6", action: "sent you a connection request" }; // Blue
       case "system":
         return { icon: AlertCircle, color: "#4DA6FF", action: "System Alert" }; // Blue
+      default:
+        return { icon: AlertCircle, color: "#0B0B0F", action: "interacted with you" }; // Safe fallback
     }
   };
 
