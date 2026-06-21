@@ -57,6 +57,11 @@ export async function signup(formData: FormData) {
     return { error: error.message };
   }
 
+  // Supabase returns an empty identities array if the email is already registered and email enumeration protection is ON.
+  if (data.user && data.user.identities && data.user.identities.length === 0) {
+    return { error: "Account already exists with this email" };
+  }
+
   // If email confirmation is disabled in Supabase, a session is returned immediately.
   if (data.session) {
     const existingUser = await prisma.user.findUnique({ where: { id: data.user!.id } });
